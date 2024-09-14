@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include QMK_KEYBOARD_H
-#include "secrets.h"
+// #include "secrets.h"
 #include "csteamengine.h"
 #include "lib/layer_status/layer_status.h"
 // #include "lib/bongocat/bongocat.h"
@@ -33,23 +33,23 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
      */
     /*  Row:    0         1        2        3         4      */
     [_BASE] = LAYOUT(
-                TO(_FN2), PWONE, TO(_FN0)
+                TO(_FN2), MO(_FN0), TO(_FN0)
             ),
 
     /*  Row:    0        1        2        3        4       */
     [_FN0] = LAYOUT(
 
-                TO(_BASE), PWTWO, TO(_FN1)
+                TO(_BASE), MO(_FN1), TO(_FN1)
             ),
 
     /*  Row:    0        1        2        3        4       */
     [_FN1] = LAYOUT(
-                TO(_FN0), PWTHREE, TO(_FN2)
+                TO(_FN0), MO(_FN2), TO(_FN2)
                 ),
 
     /*  Row:    0        1        2        3        4        */
     [_FN2] = LAYOUT(
-                TO(_FN1), PWFOUR, TO(_BASE)
+                TO(_FN1), MO(_BASE), TO(_BASE)
             ),
 };
 
@@ -64,32 +64,7 @@ bool oled_task_keymap(void) {
 #endif
 
 bool process_record_keymap (uint16_t keycode, keyrecord_t *record) {
-   switch (keycode) {
-        case PWONE:
-            if (record->event.pressed) {
-                SEND_STRING("Hello ");
-            } else {
-            }
-            break;
-        case PWTWO:
-            if (record->event.pressed) {
-                SEND_STRING(PW_ONE_STRING);
-                SEND_STRING(PW_TWO_STRING);
-            } else {
-            }
-            break;
-        case PWTHREE:
-            if (record->event.pressed) {
-                SEND_STRING(PW_THREE_STRING);
-            } else {
-            }
-            break;
-        case PWFOUR:
-            if (record->event.pressed) {
-                SEND_STRING(PW_FOUR_STRING);
-            } else {
-            }
-            break;
-   }
+//    switch (keycode) {
+//    }
   return true;
 }
