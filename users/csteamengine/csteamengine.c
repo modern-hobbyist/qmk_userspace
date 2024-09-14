@@ -4,7 +4,6 @@
 #include QMK_KEYBOARD_H
 
 #include "csteamengine.h"
-#include "secrets.h"
 
 #include "quantum.h"
 #include "common.h"
