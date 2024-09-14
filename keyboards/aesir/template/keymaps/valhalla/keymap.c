@@ -33,7 +33,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
      */
     /*  Row:    0         1        2        3         4      */
     [_BASE] = LAYOUT(
-                TO(_FN2), MO(_FN0), TO(_FN0)
+                TO(_FN2), SELECT_WORD, TO(_FN0)
             ),
 
     /*  Row:    0        1        2        3        4       */

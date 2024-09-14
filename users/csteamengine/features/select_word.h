@@ -1,4 +1,4 @@
-// Copyright 2024 Modern Hobbyst
+// Copyright 2021-2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -43,7 +43,8 @@ extern "C" {
 #endif
 
 /** Handler function for select word. */
-bool process_select_word(uint16_t keycode, keyrecord_t* record, uint16_t sel_keycode);
+bool process_select_word(uint16_t keycode, keyrecord_t* record,
+                         uint16_t sel_keycode);
 
 /**
  * @fn select_word_task(void)
@@ -57,7 +58,7 @@ bool process_select_word(uint16_t keycode, keyrecord_t* record, uint16_t sel_key
 void select_word_task(void);
 #else
 static inline void select_word_task(void) {}
-#endif // SELECT_WORD_TIMEOUT > 0
+#endif  // SELECT_WORD_TIMEOUT > 0
 
 #ifdef __cplusplus
 }
