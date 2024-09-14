@@ -11,6 +11,8 @@ enum userspace_keycodes {
 enum layer_names {
     _BASE,
     _FN0,
+    #ifdef EXTRA_LAYERS
     _FN1,
     _FN2
+    #endif
 };

@@ -4,10 +4,9 @@
 #include QMK_KEYBOARD_H
 
 #include "csteamengine.h"
+#include "features/select_word.h"
 
 #include "quantum.h"
-
-#include "features/select_word.h"
 
 // OLED animation
 #include "lib/logo.h"
@@ -24,6 +23,10 @@ bool process_record_keymap (uint16_t keycode, keyrecord_t *record) {
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     if (!process_select_word(keycode, record, SELECT_WORD)) { return false; }
+
+    if (!process_record_keymap(keycode, record)) {
+        return false;
+    }
     // other macros
     return true;
 }

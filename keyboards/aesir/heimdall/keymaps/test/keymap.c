@@ -43,12 +43,14 @@ bool oled_task_keymap(void) {
         case _FN0:
             oled_write_P(PSTR("FN0\n"), false);
             break;
+        #ifdef EXTRA_LAYERS
         case _FN1:
             oled_write_P(PSTR("FN1\n"), false);
             break;
         case _FN2:
             oled_write_P(PSTR("FN2\n"), false);
             break;
+        #endif
         default:
             // Or use the write_ln shortcut over adding '\n' to the end of your string
             oled_write_ln_P(PSTR("Undefined"), false);
