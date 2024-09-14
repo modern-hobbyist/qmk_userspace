@@ -2,8 +2,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include QMK_KEYBOARD_H
-#include <hal.h>
-#include "common.h"
+#include "csteamengine.h"
 #include "lib/layer_status/layer_status.h"
 // #include "lib/bongocat/bongocat.h"
 

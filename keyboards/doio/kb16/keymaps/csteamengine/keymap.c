@@ -28,13 +28,6 @@
 // entirely and just use numbers.
 
 // clang-format off
-enum layer_names {
-    _BASE,
-    _EMOJIS,
-    _FN1,
-    _FN2
-};
-
 // enum layer_keycodes { };
 enum custom_keycodes {
     HARDPASTE = SAFE_RANGE,
@@ -161,13 +154,13 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     /*  Row:    0         1        2        3         4      */
     [_BASE] = LAYOUT(
                 TD(TD_PW_ONE),     TD(TD_PW_TWO),    TD(TD_PW_THREE),    TD(TD_PW_FOUR),     QK_BOOT,
-                REFACTOR,     RUN,    EXTRACT_METHOD,    INSPECT,     TO(_EMOJIS),
+                REFACTOR,     RUN,    EXTRACT_METHOD,    INSPECT,     TO(_FN0),
                 INTELLIJ_BACK,     INTELLIJ_FORWARD,    COPY_PATH,   COPY_FILENAME,  KC_CAPS,
                 TD(TASK_EMOJI_LAYER), SELECT_WORD, DISTRACTION_FREE_MODE, CMD_SHIFT_T
             ),
 
     /*  Row:    0        1        2        3        4       */
-    [_EMOJIS] = LAYOUT(
+    [_FN0] = LAYOUT(
                 _______, _______, _______, _______, _______,
                 DRAGON_DROP, COPY_PASTA, _______, _______, TO(_FN1),
                 ITS_DONE, MARGED, LOL, MONKEY_LOOK, _______,
@@ -203,7 +196,7 @@ bool oled_task_keymap(void) {
 #ifdef ENCODER_MAP_ENABLE
 const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][NUM_DIRECTIONS] = {
     [_BASE]   = {ENCODER_CCW_CW(KC_MPRV, KC_MNXT), ENCODER_CCW_CW(KC_DOWN, KC_UP), ENCODER_CCW_CW(KC_PGDN, KC_PGUP)},
-    [_EMOJIS] = {ENCODER_CCW_CW(KC_TRNS, KC_TRNS), ENCODER_CCW_CW(KC_TRNS, KC_TRNS), ENCODER_CCW_CW(KC_MS_WH_RIGHT, KC_MS_WH_LEFT)},
+    [_FN0] = {ENCODER_CCW_CW(KC_TRNS, KC_TRNS), ENCODER_CCW_CW(KC_TRNS, KC_TRNS), ENCODER_CCW_CW(KC_MS_WH_RIGHT, KC_MS_WH_LEFT)},
     [_FN1]    = {ENCODER_CCW_CW(KC_TRNS, KC_TRNS), ENCODER_CCW_CW(KC_TRNS, KC_TRNS), ENCODER_CCW_CW(KC_TRNS, KC_TRNS)},
     [_FN2]    = {ENCODER_CCW_CW(KC_TRNS, KC_TRNS), ENCODER_CCW_CW(KC_TRNS, KC_TRNS), ENCODER_CCW_CW(KC_TRNS, KC_TRNS)},
 };
@@ -391,16 +384,16 @@ void task_layer_finished(tap_dance_state_t *state, void *user_data) {
             SEND_STRING(SS_LOPT(SS_LSFT(SS_TAP(X_A))));
             break;
         case TD_SINGLE_HOLD:
-            layer_on(_EMOJIS);
+            layer_on(_FN0);
             break;
         case TD_DOUBLE_TAP:
             // Check to see if the layer is already set
-            if (layer_state_is(_EMOJIS)) {
+            if (layer_state_is(_FN0)) {
                 // If already set, then switch it off
-                layer_off(_EMOJIS);
+                layer_off(_FN0);
             } else {
                 // If not already set, then switch the layer on
-                layer_on(_EMOJIS);
+                layer_on(_FN0);
             }
             break;
         default:
@@ -417,7 +410,7 @@ void pw_one_finished(tap_dance_state_t *state, void *user_data) {
             break;
         case TD_SINGLE_HOLD:
             // TODO define a hold action for pw one
-            layer_on(_EMOJIS);
+            layer_on(_FN0);
             break;
         case TD_DOUBLE_TAP:
             SEND_STRING(PW_ONE_STRING);
@@ -436,7 +429,7 @@ void pw_two_finished(tap_dance_state_t *state, void *user_data) {
             break;
         case TD_SINGLE_HOLD:
             // TODO define a hold action for pw two
-            layer_on(_EMOJIS);
+            layer_on(_FN0);
             break;
         case TD_DOUBLE_TAP:
             SEND_STRING(PW_TWO_STRING);
@@ -455,7 +448,7 @@ void pw_three_finished(tap_dance_state_t *state, void *user_data) {
             break;
         case TD_SINGLE_HOLD:
             // TODO define a hold action for pw three
-            layer_on(_EMOJIS);
+            layer_on(_FN0);
             break;
         case TD_DOUBLE_TAP:
             SEND_STRING(PW_THREE_STRING);
@@ -474,7 +467,7 @@ void pw_four_finished(tap_dance_state_t *state, void *user_data) {
             break;
         case TD_SINGLE_HOLD:
             // TODO define a hold action for pw four
-            layer_on(_EMOJIS);
+            layer_on(_FN0);
             break;
         case TD_DOUBLE_TAP:
             SEND_STRING(PW_FOUR_STRING);
@@ -488,7 +481,7 @@ void ql_reset(tap_dance_state_t *state, void *user_data) {
     // If the key was held down and now is released then switch off the layer
     if (ql_tap_state.state == TD_SINGLE_HOLD) {
         layer_on(_BASE);
-        layer_off(_EMOJIS);
+        layer_off(_FN0);
         layer_off(_FN1);
         layer_off(_FN2);
     }

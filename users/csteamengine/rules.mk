@@ -9,3 +9,5 @@ SRC += ./lib/layer_status/layer_status.c
 SRC += ./lib/logo.c
 SRC += csteamengine.c
 SRC += features/select_word.c
+
+VPATH += users/csteamengine/features

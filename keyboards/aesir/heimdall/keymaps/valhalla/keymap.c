@@ -4,8 +4,6 @@
 #include QMK_KEYBOARD_H
 
 #include "secrets.h"
-#include "common.h"
-#include "features/select_word.h"
 
 // clang-format off
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
@@ -40,20 +38,15 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 // clang-format on
 
 #include "secrets.h"
-#include "../../features/select_word.h"
 #include "../../common.h"
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
-    if (!process_select_word(keycode, record, SELWORD)) {
-        return false;
-    }
     // Your macros ...
 
     return true;
 }
 
 void matrix_scan_user(void) {
-    select_word_task();
     // Other tasks...
 }
 
