@@ -26,3 +26,5 @@
 #endif
 
 #define EXTRA_LAYERS
+
+#define CAPS_WORD_TOGGLE_KEY

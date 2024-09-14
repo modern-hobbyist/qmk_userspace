@@ -39,17 +39,17 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     /*  Row:    0        1        2        3        4       */
     [_FN0] = LAYOUT(
 
-                TO(_BASE), MO(_FN1), TO(_FN1)
+                TO(_BASE), CW_TOGG, TO(_FN1)
             ),
 
     /*  Row:    0        1        2        3        4       */
     [_FN1] = LAYOUT(
-                TO(_FN0), MO(_FN2), TO(_FN2)
+                TO(_FN0), KC_A, TO(_FN2)
                 ),
 
     /*  Row:    0        1        2        3        4        */
     [_FN2] = LAYOUT(
-                TO(_FN1), MO(_BASE), TO(_BASE)
+                TO(_FN1), KC_SPC, TO(_BASE)
             ),
 };
 
@@ -64,7 +64,6 @@ bool oled_task_keymap(void) {
 #endif
 
 bool process_record_keymap (uint16_t keycode, keyrecord_t *record) {
-//    switch (keycode) {
-//    }
+
   return true;
 }

@@ -9,5 +9,7 @@ SRC += ./lib/layer_status/layer_status.c
 SRC += ./lib/logo.c
 SRC += csteamengine.c
 SRC += features/select_word.c
+SRC += features/caps_word.c
+CAPS_WORD_ENABLE = no
 
 VPATH += users/csteamengine/features

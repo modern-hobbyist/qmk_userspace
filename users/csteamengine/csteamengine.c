@@ -5,6 +5,7 @@
 
 #include "csteamengine.h"
 #include "features/select_word.h"
+#include "features/caps_word.h"
 
 #include "quantum.h"
 
@@ -23,6 +24,7 @@ bool process_record_keymap (uint16_t keycode, keyrecord_t *record) {
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     if (!process_select_word(keycode, record, SELECT_WORD)) { return false; }
+    if (!process_caps_word(keycode, record)) { return false; }
 
     if (!process_record_keymap(keycode, record)) {
         return false;
