@@ -1,0 +1,6 @@
+#pragma once
+
+#define EXTRA_LAYERS
+#define BOTH_SHIFTS_TURNS_ON_CAPS_WORD
+#define CAPS_WORD_INVERT_ON_SHIFT
+#define CAPS_WORD_IDLE_TIMEOUT 2000  // 3 seconds.

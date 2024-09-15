@@ -24,7 +24,3 @@
 #    define I2C1_SDA_PIN B7
 #    define I2C_DRIVER I2CD1
 #endif
-
-#define EXTRA_LAYERS
-
-#define CAPS_WORD_TOGGLE_KEY

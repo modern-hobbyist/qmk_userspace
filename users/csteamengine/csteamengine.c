@@ -5,7 +5,6 @@
 
 #include "csteamengine.h"
 #include "features/select_word.h"
-#include "features/caps_word.h"
 
 #include "quantum.h"
 
