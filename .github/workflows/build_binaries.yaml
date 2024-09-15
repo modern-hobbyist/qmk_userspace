@@ -18,3 +18,25 @@ jobs:
     uses: qmk/.github/.github/workflows/qmk_userspace_publish.yml@main
     if: always() && !cancelled()
     needs: build
+    steps:
+      # Step to parse qmk.json and copy via.json files for build targets
+      - name: Parse qmk.json and copy via.json files
+        run: |
+          mkdir -p artifacts
+
+          # Extract keyboard names from qmk.json
+          build_targets=$(jq -r '.keyboards[]' qmk.json)
+
+          # For each keyboard, copy the corresponding via.json if it exists
+          for target in $build_targets; do
+            if [ -f "$target/via.json" ]; then
+              cp "$target/via.json" artifacts/
+            fi
+          done
+
+      # Upload the via.json files for the specified build targets
+      - name: Upload release artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: via-json-files
+          path: artifacts/*.via.json
