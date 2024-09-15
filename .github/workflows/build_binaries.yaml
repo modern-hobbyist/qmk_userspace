@@ -21,6 +21,7 @@ jobs:
 
   via:
     name: 'Add Via.json Files to Release Artifacts'
+    runs-on: linux
     if: always() && !calcelled()
     needs: build && publish
     steps:
