@@ -23,7 +23,7 @@ jobs:
     name: 'Add Via.json Files to Release Artifacts'
     runs-on: linux
     if: always() && !cancelled()
-    needs: build && publish
+    needs: publish
     steps:
       # Step to parse qmk.json and copy via.json files for build targets
       - name: Parse qmk.json and copy via.json files
