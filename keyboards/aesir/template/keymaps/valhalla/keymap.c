@@ -44,12 +44,12 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
     /*  Row:    0        1        2        3        4       */
     [_FN1] = LAYOUT(
-                TO(_FN0), KC_A, TO(_FN2)
+                TO(_FN0), SC_LSPO, TO(_FN2)
                 ),
 
     /*  Row:    0        1        2        3        4        */
     [_FN2] = LAYOUT(
-                TO(_FN1), KC_SPC, TO(_BASE)
+                TO(_FN1), SC_RSPC, TO(_BASE)
             ),
 };
 
