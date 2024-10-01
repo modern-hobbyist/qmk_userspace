@@ -5,11 +5,12 @@
 
 // #include "secrets.h"
 #include "csteamengine.h"
+#include "lib/layer_status/layer_status.h"
 
 // clang-format off
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [_BASE] = LAYOUT(
-                 SELECT_WORD,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,  KC_NO,
+                 SELECT_WORD,   TO(_BASE),   TO(_FN0),   TO(_FN1),   TO(_FN2),   MO(_FN2),   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,  KC_NO,
         KC_NO,   KC_ESC,   KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_F6,   KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_F11,  KC_F12,  KC_F13, KC_NO,    KC_DEL,      KC_END,      KC_HOME,    KC_NO,
         KC_NO,   KC_GRV,  KC_1,    KC_2,    KC_3,    KC_4,    KC_5,    KC_6,    KC_7,    KC_8,    KC_9,    KC_0,    KC_MINS, KC_EQL,    KC_BSPC,         KC_PPLS,     KC_PMNS,     KC_PAST,    KC_PSLS,
         KC_NO,   KC_TAB,  KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,    KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    KC_LBRC, KC_RBRC,   KC_BSLS,         KC_KP_7,     KC_KP_8,     KC_KP_9,    KC_KP_DOT,
@@ -70,8 +71,6 @@ void suspend_wakeup_init_user(void) {
 // }
 
 bool rgb_matrix_indicators_user(void) {
-    rgb_matrix_enable();
-    rgb_matrix_set_color_all(RGB_BLUE);
     if (host_keyboard_led_state().caps_lock) {
         rgb_matrix_set_color(8, RGB_BLUE);
     } else {
@@ -79,7 +78,6 @@ bool rgb_matrix_indicators_user(void) {
     }
     return false;
 }
-
 
 bool process_record_keymap(uint16_t keycode, keyrecord_t *record) {
     return true;
@@ -93,35 +91,15 @@ void matrix_scan_user(void) {
  * Default OLED driver, should show the default layer states, though may need to share those across keymaps?
  */
 #ifdef OLED_ENABLE
+oled_rotation_t oled_init_keymap(oled_rotation_t rotation) {
+    return OLED_ROTATION_180;
+}
+
 bool oled_task_keymap(void) {
-    // Host Keyboard Layer Status
-    oled_write_P(PSTR("Valhalla Layer: "), false);
+    render_layer_status();
+    // render_bongocat();
 
-    switch (get_highest_layer(layer_state)) {
-        case _BASE:
-            oled_write_P(PSTR("Default\n"), false);
-            break;
-        case _FN0:
-            oled_write_P(PSTR("FN0\n"), false);
-            break;
-        case _FN1:
-            oled_write_P(PSTR("FN1\n"), false);
-            break;
-        case _FN2:
-            oled_write_P(PSTR("FN2\n"), false);
-            break;
-        default:
-            // Or use the write_ln shortcut over adding '\n' to the end of your string
-            oled_write_ln_P(PSTR("Undefined"), false);
-    }
-
-    // Host Keyboard LED Status
-    led_t led_state = host_keyboard_led_state();
-    oled_write_P(led_state.num_lock ? PSTR("NUM ") : PSTR("    "), false);
-    oled_write_P(led_state.caps_lock ? PSTR("CAP ") : PSTR("    "), false);
-    oled_write_P(led_state.scroll_lock ? PSTR("SCR ") : PSTR("    "), false);
-
-    return false;
+    return true;
 }
 #endif
 

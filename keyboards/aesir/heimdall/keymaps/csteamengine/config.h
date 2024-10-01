@@ -14,3 +14,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #pragma once
+
+/* Use the custom font */
+#define OLED_FONT_H "./lib/glcdfont.c"
+
+#ifdef OLED_ENABLE
+/* Mapping I2C2 for OLED */
+#define I2C_DRIVER I2CD2
+#define I2C1_SCL_PIN        B8
+#define I2C1_SDA_PIN        B9
+#define I2C1_SCL_PAL_MODE   1
+#define I2C1_SDA_PAL_MODE   1
+#define I2C1_TIMINGR_PRESC  0U
+#define I2C1_TIMINGR_SCLDEL 3U
+#define I2C1_TIMINGR_SDADEL 1U
+#define I2C1_TIMINGR_SCLH   3U
+#define I2C1_TIMINGR_SCLL   9U
+
+#endif

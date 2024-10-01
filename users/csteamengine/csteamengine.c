@@ -32,8 +32,13 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     return true;
 }
 
-// #ifdef OLED_ENABLE
+#ifdef OLED_ENABLE
 uint16_t startup_timer;
+
+__attribute__ ((weak))
+oled_rotation_t oled_init_keymap (oled_rotation_t rotation) {
+  return false;
+}
 
 __attribute__ ((weak))
 bool oled_task_keymap (void) {
@@ -42,7 +47,7 @@ bool oled_task_keymap (void) {
 
 oled_rotation_t oled_init_user(oled_rotation_t rotation) {
     startup_timer = timer_read();
-    return rotation;
+    return oled_init_keymap(rotation);
 }
 
 bool oled_task_user(void) {
@@ -58,4 +63,4 @@ bool oled_task_user(void) {
 
     return true;
 }
-// #endif
+#endif
