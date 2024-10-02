@@ -7,16 +7,54 @@
 #include "csteamengine.h"
 #include "lib/layer_status/layer_status.h"
 
+enum {
+    TASK_EMOJI_LAYER, // Our custom tap dance key; add any other tap dance keys to this enum
+    TD_PW_ONE,
+    TD_PW_TWO,
+    TD_PW_THREE,
+    TD_PW_FOUR,
+    TD_CAPS_LOCK,
+    TD_SC_LSHIFT,
+    TD_SC_RSHIFT,
+};
+
 // clang-format off
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [_BASE] = LAYOUT(
-                 SELECT_WORD,   TO(_BASE),   TO(_FN0),   TO(_FN1),   TO(_FN2),   MO(_FN2),   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,  KC_NO,
-        QK_BOOT,   KC_ESC,   KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_F6,   KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_F11,  KC_F12,  KC_F13, KC_DEL,    KC_NO,      KC_END,      KC_HOME,    KC_NUM,
-        QK_RBT,   KC_GRV,  KC_1,    KC_2,    KC_3,    KC_4,    KC_5,    KC_6,    KC_7,    KC_8,    KC_9,    KC_0,    KC_MINS, KC_EQL,    KC_BSPC,         KC_PPLS,     KC_PMNS,     KC_PAST,    KC_PSLS,
-        EE_CLR,   KC_TAB,  KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,    KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    KC_LBRC, KC_RBRC,   KC_BSLS,         KC_KP_7,     KC_KP_8,     KC_KP_9,    KC_KP_DOT,
-        KC_A,   KC_CAPS, KC_A,    KC_S,    KC_D,    KC_F,    KC_G,    KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT,            KC_ENT,          KC_KP_4,     KC_KP_5,     KC_KP_6,    KC_UP,
-        RGB_HUI,   KC_LSFT,          KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH,            KC_RSFT,         KC_KP_1,     KC_KP_2,     KC_KP_3,    KC_DOWN,
-        RGB_HUD,   KC_LCTL, KC_LALT, KC_LGUI,                            KC_SPC,                             KC_RGUI, KC_RALT, KC_APP,    KC_RCTL,         KC_PENT,     KC_KP_0,     KC_LEFT,    KC_RIGHT
+                 SELECT_WORD,   CW_TOGG,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,  KC_NO,
+        TO(_FN0),   KC_ESC,   KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_F6,   KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_F11,  KC_F12,  KC_F13, KC_NO,  KC_PPLS,      KC_END,      KC_HOME,    KC_NUM,
+        KC_NO,   KC_GRV,  KC_1,    KC_2,    KC_3,    KC_4,    KC_5,    KC_6,    KC_7,    KC_8,    KC_9,    KC_0,    KC_MINS, KC_EQL,    KC_BSPC,           KC_DEL,     KC_PMNS,     KC_PAST,     KC_PSLS,
+        KC_NO,   KC_TAB,  KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,    KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    KC_LBRC, KC_RBRC,   KC_BSLS,           KC_KP_DOT,   KC_KP_7,     KC_KP_8,     KC_KP_9,
+        KC_NO,   TD(TD_CAPS_LOCK), KC_A,    KC_S,    KC_D,    KC_F,    KC_G,    KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT,   KC_ENT,            KC_UP,       KC_KP_4,     KC_KP_5,     KC_KP_6,
+        RGB_HUI,   TD(TD_SC_LSHIFT),          KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH, TD(TD_SC_RSHIFT),  KC_DOWN,     KC_KP_1,     KC_KP_2,     KC_KP_3,
+        RGB_HUD,   KC_LCTL, KC_LALT, KC_LGUI,                            KC_SPC,                             KC_RGUI, KC_RALT, KC_APP,  KC_RCTL,           KC_LEFT,     KC_RIGHT,    KC_KP_0,     KC_PENT
+    ),
+    [_FN0] = LAYOUT(
+                 SELECT_WORD,   CW_TOGG,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,  KC_NO,
+        TO(_FN1),   KC_ESC,   KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_F6,   KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_F11,  KC_F12,  KC_F13, KC_DEL,    KC_NO,      KC_END,      KC_HOME,    KC_NUM,
+        KC_NO,   KC_GRV,  KC_1,    KC_2,    KC_3,    KC_4,    KC_5,    KC_6,    KC_7,    KC_8,    KC_9,    KC_0,    KC_MINS, KC_EQL,    KC_BSPC,           KC_PPLS,     KC_PMNS,     KC_PAST,     KC_PSLS,
+        KC_NO,   KC_TAB,  KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,    KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    KC_LBRC, KC_RBRC,   KC_BSLS,           KC_KP_DOT,   KC_KP_7,     KC_KP_8,     KC_KP_9,
+        KC_NO,   KC_CAPS, KC_A,    KC_S,    KC_D,    KC_F,    KC_G,    KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT,            KC_ENT,            KC_UP,       KC_KP_4,     KC_KP_5,     KC_KP_6,
+        RGB_HUI,   KC_LSFT,          KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH,            KC_RSFT,         KC_DOWN,     KC_KP_1,     KC_KP_2,     KC_KP_3,
+        RGB_HUD,   KC_LCTL, KC_LALT, KC_LGUI,                            KC_SPC,                             KC_RGUI, KC_RALT, KC_APP,    KC_RCTL,         KC_LEFT,     KC_RIGHT,    KC_KP_0,     KC_PENT
+    ),
+    [_FN1] = LAYOUT(
+                 SELECT_WORD,   CW_TOGG,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,  KC_NO,
+        TO(_FN2),   KC_ESC,   KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_F6,   KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_F11,  KC_F12,  KC_F13, KC_DEL,    KC_NO,      KC_END,      KC_HOME,    KC_NUM,
+        KC_NO,   KC_GRV,  KC_1,    KC_2,    KC_3,    KC_4,    KC_5,    KC_6,    KC_7,    KC_8,    KC_9,    KC_0,    KC_MINS, KC_EQL,    KC_BSPC,           KC_PPLS,     KC_PMNS,     KC_PAST,     KC_PSLS,
+        KC_NO,   KC_TAB,  KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,    KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    KC_LBRC, KC_RBRC,   KC_BSLS,           KC_KP_DOT,   KC_KP_7,     KC_KP_8,     KC_KP_9,
+        KC_NO,   KC_CAPS, KC_A,    KC_S,    KC_D,    KC_F,    KC_G,    KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT,            KC_ENT,            KC_UP,       KC_KP_4,     KC_KP_5,     KC_KP_6,
+        RGB_HUI,   KC_LSFT,          KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH,            KC_RSFT,         KC_DOWN,     KC_KP_1,     KC_KP_2,     KC_KP_3,
+        RGB_HUD,   KC_LCTL, KC_LALT, KC_LGUI,                            KC_SPC,                             KC_RGUI, KC_RALT, KC_APP,    KC_RCTL,         KC_LEFT,     KC_RIGHT,    KC_KP_0,     KC_PENT
+    ),
+    [_FN2] = LAYOUT(
+                 SELECT_WORD,   CW_TOGG,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,  KC_NO,
+        TO(_BASE),   KC_ESC,   KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_F6,   KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_F11,  KC_F12,  KC_F13, KC_DEL,    KC_NO,      KC_END,      KC_HOME,    KC_NUM,
+        KC_NO,   KC_GRV,  KC_1,    KC_2,    KC_3,    KC_4,    KC_5,    KC_6,    KC_7,    KC_8,    KC_9,    KC_0,    KC_MINS, KC_EQL,    KC_BSPC,           KC_PPLS,     KC_PMNS,     KC_PAST,     KC_PSLS,
+        KC_NO,   KC_TAB,  KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,    KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    KC_LBRC, KC_RBRC,   KC_BSLS,           KC_KP_DOT,   KC_KP_7,     KC_KP_8,     KC_KP_9,
+        KC_NO,   KC_CAPS, KC_A,    KC_S,    KC_D,    KC_F,    KC_G,    KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT,            KC_ENT,            KC_UP,       KC_KP_4,     KC_KP_5,     KC_KP_6,
+        RGB_HUI,   KC_LSFT,          KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH,            KC_RSFT,         KC_DOWN,     KC_KP_1,     KC_KP_2,     KC_KP_3,
+        RGB_HUD,   KC_LCTL, KC_LALT, KC_LGUI,                            KC_SPC,                             KC_RGUI, KC_RALT, KC_APP,    KC_RCTL,         KC_LEFT,     KC_RIGHT,    KC_KP_0,     KC_PENT
     )
 };
 // clang-format on
@@ -117,11 +155,6 @@ typedef struct {
     uint16_t   hold;
 } td_tap_t;
 
-enum {
-    TASK_EMOJI_LAYER
-    // TODO add more Tap Dance keycodes here.
-};
-
 td_state_t cur_dance(tap_dance_state_t *state);
 
 // Functions associated with individual tap dances
@@ -169,6 +202,61 @@ void task_layer_finished(tap_dance_state_t *state, void *user_data) {
     }
 }
 
+// Functions that control what our tap dance key does
+// void task_caps_lock(tap_dance_state_t *state, void *user_data) {
+//     ql_tap_state.state = cur_dance(state);
+//     switch (ql_tap_state.state) {
+//         case TD_SINGLE_TAP:
+//             tap_code(CAPS_WORD);
+//             break;
+//         case TD_SINGLE_HOLD:
+//             break;
+//         case TD_DOUBLE_TAP:
+//             tap_code(KC_CAPS);
+//             break;
+//         default:
+//             break;
+//     }
+// }
+
+// Functions that control what our tap dance key does
+void task_sc_left_shift(tap_dance_state_t *state, void *user_data) {
+    ql_tap_state.state = cur_dance(state);
+    switch (ql_tap_state.state) {
+        case TD_SINGLE_TAP:
+            SEND_STRING("(");
+            break;
+        case TD_SINGLE_HOLD:
+            register_code(KC_LSFT);
+            break;
+        case TD_DOUBLE_TAP:
+            tap_code(KC_LSFT);
+            tap_code(KC_LSFT);
+            break;
+        default:
+            break;
+    }
+}
+
+// Functions that control what our tap dance key does
+void task_sc_right_shift(tap_dance_state_t *state, void *user_data) {
+    ql_tap_state.state = cur_dance(state);
+    switch (ql_tap_state.state) {
+        case TD_SINGLE_TAP:
+            SEND_STRING(")");
+            break;
+        case TD_SINGLE_HOLD:
+            register_code(KC_RSFT);
+            break;
+        case TD_DOUBLE_TAP:
+            tap_code(KC_RSFT);
+            tap_code(KC_RSFT);
+            break;
+        default:
+            break;
+    }
+}
+
 void ql_reset(tap_dance_state_t *state, void *user_data) {
     // If the key was held down and now is released then switch off the layer
     if (ql_tap_state.state == TD_SINGLE_HOLD) {
@@ -176,6 +264,8 @@ void ql_reset(tap_dance_state_t *state, void *user_data) {
         layer_off(_FN0);
         layer_off(_FN1);
         layer_off(_FN2);
+        unregister_code(KC_LSFT);
+        unregister_code(KC_RSFT);
     }
     ql_tap_state.state = TD_NONE;
 }
@@ -184,6 +274,9 @@ void ql_reset(tap_dance_state_t *state, void *user_data) {
 // Associate our tap dance key with its functionality
 tap_dance_action_t tap_dance_actions[] = {
     [TASK_EMOJI_LAYER] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, task_layer_finished, ql_reset),
+    // [TD_CAPS_LOCK] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, task_caps_lock, ql_reset),
+    [TD_SC_LSHIFT] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, task_sc_left_shift, ql_reset),
+    [TD_SC_RSHIFT] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, task_sc_right_shift, ql_reset),
     // TODO add more tap dance actions here.
 };
 // clang-format on
