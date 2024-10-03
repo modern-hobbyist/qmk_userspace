@@ -11,6 +11,79 @@
 // OLED animation
 #include "lib/logo.h"
 
+
+static uint32_t key_timer;               // timer for last keyboard activity, use 32bit value and function to make longer idle time possible
+static void     refresh_rgb(void);       // refreshes the activity timer and RGB, invoke whenever any activity happens
+static void     check_rgb_timeout(void); // checks if enough time has passed for RGB to timeout
+bool            is_rgb_timeout = false;  // store if RGB has timed out or not in a boolean
+
+void refresh_rgb(void) {
+    key_timer = timer_read32(); // store time of last refresh
+    if (is_rgb_timeout) {
+        is_rgb_timeout = false;
+        rgb_matrix_enable_noeeprom();
+    }
+}
+
+void check_rgb_timeout(void) {
+    if (!is_rgb_timeout && timer_elapsed32(key_timer) > RGB_MATRIX_TIMEOUT) // check if RGB has already timeout and if enough time has passed
+    {
+        rgb_matrix_disable_noeeprom();
+        is_rgb_timeout = true;
+    }
+}
+
+__attribute__ ((weak))
+void housekeeping_task_keymap(void) {
+}
+/* Then, call the above functions from QMK's built in post processing functions like so */
+/* Runs at the end of each scan loop, check if RGB timeout has occured or not */
+void housekeeping_task_user(void) {
+#ifdef RGB_MATRIX_TIMEOUT
+    check_rgb_timeout();
+#endif
+}
+
+
+__attribute__ ((weak))
+void post_encoder_update_keymap(uint8_t index, bool clockwise) {
+}
+
+/* Runs after each encoder tick, check if activity occurred */
+void post_encoder_update_user(uint8_t index, bool clockwise) {
+#ifdef RGB_MATRIX_TIMEOUT
+    refresh_rgb();
+#endif
+}
+
+__attribute__ ((weak))
+void post_process_record_keymap(uint16_t keycode, keyrecord_t *record) {
+}
+
+/* Runs after each key press, check if activity occurred */
+void post_process_record_user(uint16_t keycode, keyrecord_t *record) {
+#ifdef RGB_MATRIX_TIMEOUT
+    if (record->event.pressed) refresh_rgb();
+#endif
+}
+__attribute__ ((weak))
+void suspend_power_down_keymap(void) {
+    // code will run multiple times while keyboard is suspended
+}
+
+void suspend_power_down_user(void) {
+    // code will run multiple times while keyboard is suspended
+}
+
+__attribute__ ((weak))
+void suspend_wakeup_init_keymap(void) {
+    // code will run on keyboard wakeup
+}
+
+void suspend_wakeup_init_user(void) {
+    // code will run on keyboard wakeup
+}
+
 // Default timeout for displaying boot logo.
 #ifndef OLED_LOGO_TIMEOUT
 #    define OLED_LOGO_TIMEOUT 3500
