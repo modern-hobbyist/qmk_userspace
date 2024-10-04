@@ -24,3 +24,24 @@
 #    define I2C1_SDA_PIN B7
 #    define I2C_DRIVER I2CD1
 #endif
+
+#define SPI_DRIVER SPID2
+#define SPI_SCK_PIN B13
+// #define SPI_SCK_PAL_MODE 0
+#define SPI_MOSI_PIN B15
+// #define SPI_MOSI_PAL_MODE 0
+#define SPI_MISO_PIN B14
+// #define SPI_MISO_PAL_MODE 0
+
+#define LCD_RST_PIN B5
+#define LCD_CS_PIN A0
+#define LCD_DC_PIN A1
+#ifndef LCD_ACTIVITY_TIMEOUT
+#    define LCD_ACTIVITY_TIMEOUT 30000
+#endif
+
+// Backlight driver (to control LCD backlight)
+#define BACKLIGHT_PWM_DRIVER PWMD4
+#define BACKLIGHT_PWM_CHANNEL 1
+#define BACKLIGHT_PAL_MODE 1
+#define BACKLIGHT_PIN B6

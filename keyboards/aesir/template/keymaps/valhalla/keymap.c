@@ -2,10 +2,14 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include QMK_KEYBOARD_H
+#include "quantum.h"
 // #include "secrets.h"
 #include "csteamengine.h"
 #include "lib/layer_status/layer_status.h"
 // #include "lib/bongocat/bongocat.h"
+#include <qp.h>
+
+painter_device_t lcd;
 
 // clang-format off
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
@@ -66,4 +70,22 @@ bool oled_task_keymap(void) {
 bool process_record_keymap (uint16_t keycode, keyrecord_t *record) {
 
   return true;
+}
+
+
+void keyboard_post_init_user(void) {
+    // Let the LCD get some power...
+    wait_ms(200);
+
+    // Initialize the LCD
+    lcd = qp_ili9341_make_spi_device(240, 320, LCD_CS_PIN, LCD_DC_PIN, LCD_RST_PIN, 16, 0);
+    qp_init(lcd, QP_ROTATION_0);  // Try different rotations
+
+    backlight_enable();
+    backlight_level(1);
+
+    // Turn on the LCD and clear the display
+    qp_power(lcd, true);
+    qp_rect(lcd, 0, 0, 239, 319, 0,0,0, true);  // Clear to black
+    qp_rect(lcd, 100, 100, 120, 120, 0, 0, 100, true);
 }
