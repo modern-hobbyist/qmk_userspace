@@ -27,11 +27,11 @@
 
 #define SPI_DRIVER SPID2
 #define SPI_SCK_PIN B13
-// #define SPI_SCK_PAL_MODE 0
+// #define SPI_SCK_PAL_MODE 5
 #define SPI_MOSI_PIN B15
-// #define SPI_MOSI_PAL_MODE 0
+// #define SPI_MOSI_PAL_MODE 5
 #define SPI_MISO_PIN B14
-// #define SPI_MISO_PAL_MODE 0
+// #define SPI_MISO_PAL_MODE 5
 
 #define LCD_RST_PIN B5
 #define LCD_CS_PIN A0
@@ -42,6 +42,7 @@
 
 // Backlight driver (to control LCD backlight)
 #define BACKLIGHT_PWM_DRIVER PWMD4
-#define BACKLIGHT_PWM_CHANNEL 1
-#define BACKLIGHT_PAL_MODE 1
-#define BACKLIGHT_PIN B6
+#define BACKLIGHT_PWM_CHANNEL 3
+#define BACKLIGHT_LEVELS 10
+// #define BACKLIGHT_PAL_MODE 2
+#define BACKLIGHT_PIN B8

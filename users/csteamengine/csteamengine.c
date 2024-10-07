@@ -12,7 +12,7 @@
 #include "lib/logo.h"
 
 
-#ifdef RGB_MATRIX
+#ifdef RGB_MATRIX_TIMEOUT
 static uint32_t key_timer;               // timer for last keyboard activity, use 32bit value and function to make longer idle time possible
 static void     refresh_rgb(void);       // refreshes the activity timer and RGB, invoke whenever any activity happens
 static void     check_rgb_timeout(void); // checks if enough time has passed for RGB to timeout
@@ -40,16 +40,16 @@ void check_rgb_timeout(void) {
 #endif
 
 // __attribute__ ((weak))
-// void housekeeping_task_keymap(void) {
-// }
+void housekeeping_task_keymap(void) {
+}
 
 // /* Then, call the above functions from QMK's built in post processing functions like so */
 // /* Runs at the end of each scan loop, check if RGB timeout has occured or not */
-// void housekeeping_task_user(void) {
-// #ifdef RGB_MATRIX_TIMEOUT
-//     check_rgb_timeout();
-// #endif
-// }
+void housekeeping_task_user(void) {
+#ifdef RGB_MATRIX_TIMEOUT
+    check_rgb_timeout();
+#endif
+}
 
 
 __attribute__ ((weak))
@@ -285,6 +285,12 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         case MOVE_OBSIDIAN_FILE:
             if (record->event.pressed) {
                 SEND_STRING(SS_LGUI(SS_LSFT(SS_TAP(X_M))));
+            } else {
+            }
+            break;
+        case MAC_EMOJIS:
+            if (record->event.pressed) {
+                SEND_STRING(SS_LGUI(SS_LCTL(SS_TAP(X_SPACE))));
             } else {
             }
             break;

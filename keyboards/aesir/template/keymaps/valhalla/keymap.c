@@ -8,8 +8,10 @@
 #include "lib/layer_status/layer_status.h"
 // #include "lib/bongocat/bongocat.h"
 #include <qp.h>
+#include "graphics/face.qgf.h"
 
 painter_device_t lcd;
+static uint8_t last_backlight = 255;
 
 // clang-format off
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
@@ -37,7 +39,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
      */
     /*  Row:    0         1        2        3         4      */
     [_BASE] = LAYOUT(
-                KC_LSFT, SELECT_WORD, TO(_FN0)
+                BL_DOWN, BL_TOGG, BL_UP
             ),
 
     /*  Row:    0        1        2        3        4       */
@@ -72,20 +74,52 @@ bool process_record_keymap (uint16_t keycode, keyrecord_t *record) {
   return true;
 }
 
+// static painter_image_handle_t my_image;
 
 void keyboard_post_init_user(void) {
     // Let the LCD get some power...
     wait_ms(200);
 
     // Initialize the LCD
-    lcd = qp_ili9341_make_spi_device(240, 320, LCD_CS_PIN, LCD_DC_PIN, LCD_RST_PIN, 16, 0);
-    qp_init(lcd, QP_ROTATION_0);  // Try different rotations
+    lcd = qp_ili9341_make_spi_device(240, 320, LCD_CS_PIN, LCD_DC_PIN, LCD_RST_PIN, 4, 0);
+    qp_init(lcd, QP_ROTATION_180);  // Try different rotations
 
     backlight_enable();
-    backlight_level(1);
-
+    backlight_set(255);
     // Turn on the LCD and clear the display
     qp_power(lcd, true);
-    qp_rect(lcd, 0, 0, 239, 319, 0,0,0, true);  // Clear to black
-    qp_rect(lcd, 100, 100, 120, 120, 0, 0, 100, true);
+    qp_rect(lcd, 0, 0, 239, 319, 0, 0 ,255, true);
+    qp_circle(lcd, 120, 150, 20, 8, 255, 255, true);
+    // my_image = qp_load_image_mem(gfx_face);
+    // if (my_image != NULL) {
+    //     qp_drawimage(lcd, (239 - my_image->width), (319 - my_image->height), my_image);
+    // }
+}
+
+void housekeeping_task_user(void) {
+    static uint32_t last_draw = 0;
+    if (timer_elapsed32(last_draw) > 33) { // Throttle to 30fps
+        last_draw = timer_read32();
+        // Draw r=4 filled circles down the left side of the display
+        for (int i = 0; i < 239; i+=8) {
+            qp_circle(lcd, 4, 4+i, 4, i, 255, 255, true);
+        }
+        qp_flush(lcd);
+    }
+}
+
+void suspend_power_down_keymap(void) {
+    if (last_backlight == 255) {
+        last_backlight = get_backlight_level();
+    }
+    backlight_set(0);
+    qp_power(lcd, false);
+}
+
+void suspend_wakeup_init_keymap(void) {
+    qp_power(lcd, true);
+    if (last_backlight != 255) {
+        backlight_set(last_backlight);
+    }
+    last_backlight = 255;
 }

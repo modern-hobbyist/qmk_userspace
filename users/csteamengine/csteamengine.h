@@ -35,6 +35,7 @@ enum userspace_keycodes {
     OPEN_OBSIDIAN,
     NEW_OBSIDIAN_NOTE,
     MOVE_OBSIDIAN_FILE,
+    MAC_EMOJIS
 };
 
 enum layer_names {

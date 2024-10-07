@@ -1,4 +1,4 @@
-VIA_ENABLE = yes
+VIA_ENABLE = no
 OLED_ENABLE = no
 USER_NAME := csteamengine
 QUANTUM_PAINTER_ENABLE = yes
