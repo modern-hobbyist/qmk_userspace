@@ -35,7 +35,11 @@ enum userspace_keycodes {
     OPEN_OBSIDIAN,
     NEW_OBSIDIAN_NOTE,
     MOVE_OBSIDIAN_FILE,
-    MAC_EMOJIS
+    MAC_EMOJIS,
+    SCREEN_RECORDING_1,
+    SCREEN_SHOT_TO_CLIPBOARD,
+    SCREEN_SHOT_AREA,
+    SCREEN_SHOT_SCREEN,
 };
 
 enum layer_names {

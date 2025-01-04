@@ -294,6 +294,30 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             } else {
             }
             break;
+        case SCREEN_RECORDING_1:
+            if (record->event.pressed) {
+                SEND_STRING(SS_LGUI(SS_LSFT(SS_TAP(X_1))));
+            } else {
+            }
+            break;
+        case SCREEN_SHOT_TO_CLIPBOARD:
+            if (record->event.pressed) {
+                SEND_STRING(SS_LGUI(SS_LSFT(SS_TAP(X_2))));
+            } else {
+            }
+            break;
+        case SCREEN_SHOT_AREA:
+            if (record->event.pressed) {
+                SEND_STRING(SS_LGUI(SS_LSFT(SS_TAP(X_3))));
+            } else {
+            }
+            break;
+        case SCREEN_SHOT_SCREEN:
+            if (record->event.pressed) {
+                SEND_STRING(SS_LGUI(SS_LSFT(SS_TAP(X_4))));
+            } else {
+            }
+            break;
     }
     // other macros
     return true;
