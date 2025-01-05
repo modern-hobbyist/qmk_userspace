@@ -5,7 +5,9 @@
 
 // #include "secrets.h"
 #include "csteamengine.h"
+#ifdef SECRETS_H
 #include "secrets.h"
+#endif
 #include "lib/layer_status/layer_status.h"
 
 enum {
@@ -256,7 +258,9 @@ void pw_one_finished(tap_dance_state_t *state, void *user_data) {
             SEND_STRING(SS_LGUI(SS_LCTL(SS_TAP(X_Q))));
             break;
         case TD_DOUBLE_TAP:
+            #ifdef SECRETS_H
             SEND_STRING(PW_ONE_STRING);
+            #endif
             break;
         default:
             break;
@@ -275,7 +279,9 @@ void pw_two_finished(tap_dance_state_t *state, void *user_data) {
             layer_on(_FN0);
             break;
         case TD_DOUBLE_TAP:
+            #ifdef SECRETS_H
             SEND_STRING(PW_TWO_STRING);
+            #endif
             break;
         default:
             break;
@@ -294,7 +300,9 @@ void pw_three_finished(tap_dance_state_t *state, void *user_data) {
             layer_on(_FN0);
             break;
         case TD_DOUBLE_TAP:
+            #ifdef SECRETS_H
             SEND_STRING(PW_THREE_STRING);
+            #endif
             break;
         default:
             break;
@@ -313,7 +321,9 @@ void pw_four_finished(tap_dance_state_t *state, void *user_data) {
             layer_on(_FN0);
             break;
         case TD_DOUBLE_TAP:
+            #ifdef SECRETS_H
             SEND_STRING(PW_FOUR_STRING);
+            #endif
             break;
         default:
             break;
