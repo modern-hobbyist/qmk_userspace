@@ -39,7 +39,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
      */
     /*  Row:    0         1        2        3         4      */
     [_BASE] = LAYOUT(
-                BL_DOWN, BL_TOGG, BL_UP
+                BL_DOWN, KC_ENTER, BL_UP
             ),
 
     /*  Row:    0        1        2        3        4       */
@@ -69,14 +69,42 @@ bool oled_task_keymap(void) {
 }
 #endif
 
-bool process_record_keymap (uint16_t keycode, keyrecord_t *record) {
+#ifdef LCD_ACTIVITY_TIMEOUT
+static uint32_t lcd_key_timer;
+static void     refresh_lcd(void);       // refreshes the activity timer and RGB, invoke whenever any activity happens
+static void     check_lcd_timeout(void); // checks if enough time has passed for RGB to timeout
+bool            is_lcd_timeout = false;  // store if RGB has timed out or not in a boolean
 
-  return true;
+void refresh_lcd(void) {
+    lcd_key_timer = timer_read32(); // store time of last refresh
+    if (is_lcd_timeout) {
+        qp_power(lcd, true);
+        if (last_backlight != 255) {
+            backlight_set(last_backlight);
+        }
+        last_backlight = 255;
+        is_lcd_timeout = false;
+    }
 }
+
+void check_lcd_timeout(void) {
+    if (!is_lcd_timeout && timer_elapsed32(lcd_key_timer) > LCD_ACTIVITY_TIMEOUT) // check if RGB has already timeout and if enough time has passed
+    {
+        if (last_backlight == 255) {
+            last_backlight = get_backlight_level();
+        }
+
+        backlight_set(0);
+
+        qp_power(lcd, false);
+        is_lcd_timeout = true;
+    }
+}
+#endif
 
 // static painter_image_handle_t my_image;
 
-void keyboard_post_init_user(void) {
+void keyboard_post_init_keymap(void) {
     // Let the LCD get some power...
     wait_ms(200);
 
@@ -96,7 +124,11 @@ void keyboard_post_init_user(void) {
     // }
 }
 
-void housekeeping_task_user(void) {
+void housekeeping_task_keymap(void) {
+    #ifdef LCD_ACTIVITY_TIMEOUT
+        check_lcd_timeout();
+    #endif
+
     static uint32_t last_draw = 0;
     if (timer_elapsed32(last_draw) > 33) { // Throttle to 30fps
         last_draw = timer_read32();
@@ -122,4 +154,16 @@ void suspend_wakeup_init_keymap(void) {
         backlight_set(last_backlight);
     }
     last_backlight = 255;
+    qp_flush(lcd);
+}
+
+bool process_record_keymap (uint16_t keycode, keyrecord_t *record) {
+    if (record->event.pressed) {
+        #ifdef LCD_ACTIVITY_TIMEOUT
+            refresh_lcd();
+
+        #endif
+    }
+
+  return true;
 }

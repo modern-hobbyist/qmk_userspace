@@ -39,13 +39,14 @@ void check_rgb_timeout(void) {
 }
 #endif
 
-// __attribute__ ((weak))
+__attribute__ ((weak))
 void housekeeping_task_keymap(void) {
 }
 
 // /* Then, call the above functions from QMK's built in post processing functions like so */
 // /* Runs at the end of each scan loop, check if RGB timeout has occured or not */
 void housekeeping_task_user(void) {
+    housekeeping_task_keymap();
 #ifdef RGB_MATRIX_TIMEOUT
     check_rgb_timeout();
 #endif
@@ -57,13 +58,13 @@ void post_encoder_update_keymap(uint8_t index, bool clockwise) {
 }
 
 
-// __attribute__ ((weak))
-// void keyboard_post_init_keymap(void) {
-// }
+__attribute__ ((weak))
+void keyboard_post_init_keymap(void) {
+}
 
-// void keyboard_post_init_user(void) {
-//     // keyboard_post_init_keymap();
-// }
+void keyboard_post_init_user(void) {
+    keyboard_post_init_keymap();
+}
 
 /* Runs after each encoder tick, check if activity occurred */
 void post_encoder_update_user(uint8_t index, bool clockwise) {
@@ -89,6 +90,7 @@ void suspend_power_down_keymap(void) {
 
 void suspend_power_down_user(void) {
     // code will run multiple times while keyboard is suspended
+    suspend_power_down_keymap();
 }
 
 __attribute__ ((weak))
@@ -98,6 +100,7 @@ void suspend_wakeup_init_keymap(void) {
 
 void suspend_wakeup_init_user(void) {
     // code will run on keyboard wakeup
+    suspend_wakeup_init_keymap();
 }
 
 // Default timeout for displaying boot logo.

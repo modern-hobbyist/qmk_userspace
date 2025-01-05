@@ -25,6 +25,12 @@
 #    define I2C_DRIVER I2CD1
 #endif
 
+#ifdef RGB_MATRIX_TIMEOUT
+ #undef RGB_MATRIX_TIMEOUT
+#endif
+
+#define QUANTUM_PAINTER_DISPLAY_TIMEOUT 60000
+
 #define SPI_DRIVER SPID2
 #define SPI_SCK_PIN B13
 // #define SPI_SCK_PAL_MODE 5
@@ -36,8 +42,9 @@
 #define LCD_RST_PIN B5
 #define LCD_CS_PIN A0
 #define LCD_DC_PIN A1
+#define LCD_ENABLE_PIN
 #ifndef LCD_ACTIVITY_TIMEOUT
-#    define LCD_ACTIVITY_TIMEOUT 30000
+#    define LCD_ACTIVITY_TIMEOUT 60000
 #endif
 
 // Backlight driver (to control LCD backlight)
