@@ -8,7 +8,7 @@
 #include "lib/layer_status/layer_status.h"
 // #include "lib/bongocat/bongocat.h"
 #include <qp.h>
-#include "graphics/face.qgf.h"
+#include "graphics/layout-1-left.qgf.h"
 
 painter_device_t lcd;
 static uint8_t last_backlight = 255;
@@ -102,7 +102,7 @@ void check_lcd_timeout(void) {
 }
 #endif
 
-// static painter_image_handle_t my_image;
+static painter_image_handle_t my_image;
 
 void keyboard_post_init_keymap(void) {
     // Let the LCD get some power...
@@ -116,11 +116,11 @@ void keyboard_post_init_keymap(void) {
     backlight_set(255);
     // Turn on the LCD and clear the display
     qp_power(lcd, true);
-    qp_rect(lcd, 0, 0, 239, 319, 0, 0 ,255, true);
-    qp_circle(lcd, 120, 150, 20, 8, 255, 255, true);
-    // my_image = qp_load_image_mem(gfx_face);
+    // qp_rect(lcd, 0, 0, 239, 319, 0, 0 ,255, true);
+    // qp_circle(lcd, 120, 150, 20, 8, 255, 255, true);
+    // my_image = qp_load_image_mem(gfx_layout_1_left);
     // if (my_image != NULL) {
-    //     qp_drawimage(lcd, (239 - my_image->width), (319 - my_image->height), my_image);
+    //     qp_drawimage(lcd, 0, 20, my_image);
     // }
 }
 
