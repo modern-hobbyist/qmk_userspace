@@ -7,3 +7,5 @@ BACKLIGHT_ENABLE = yes
 PWM_ENABLE = yes
 BACKLIGHT_DRIVER = pwm
 SERIAL_DRIVER = usart
+SRC += ./graphics/layout-1-left.qgf.c
+SRC += graphics/face.qgf.c

@@ -27,5 +27,6 @@
 #endif
 
 #define CAPSLOCK_LED 8
+
 // Uncomment this if you want to configure a secrets.h file
 // #define SECRETS_H

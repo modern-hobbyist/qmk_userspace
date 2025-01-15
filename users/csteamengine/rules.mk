@@ -10,9 +10,7 @@ SRC += ./lib/layer_status/layer_status.c
 SRC += ./lib/logo.c
 SRC += csteamengine.c
 SRC += features/select_word.c
-SRC += graphics/face.qgf.c
 CAPS_WORD_ENABLE = yes
 
 VPATH += users/csteamengine/features
 VPATH += users/csteamengine/graphics
-SRC += ./graphics/layout-1-left.qgf.c
