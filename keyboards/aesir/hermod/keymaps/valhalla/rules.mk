@@ -9,3 +9,6 @@ BACKLIGHT_DRIVER = pwm
 SERIAL_DRIVER = usart
 SRC += ./graphics/layout-1-left.qgf.c
 SRC += graphics/face.qgf.c
+
+# RGB Matrix enabled
+RGB_MATRIX_ENABLE = yes
