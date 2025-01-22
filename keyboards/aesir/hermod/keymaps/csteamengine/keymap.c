@@ -58,14 +58,6 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 };
 
 // clang-format on
-#ifdef OLED_ENABLE
-bool oled_task_keymap(void) {
-    render_layer_status();
-    // render_bongocat();
-
-    return true;
-}
-#endif
 
 #ifdef LCD_ACTIVITY_TIMEOUT
 static uint32_t lcd_key_timer;
@@ -114,14 +106,14 @@ void keyboard_post_init_keymap(void) {
 
     // Initialize the LCD
     lcd = qp_ili9341_make_spi_device(240, 320, LCD_CS_PIN, LCD_DC_PIN, LCD_RST_PIN, 4, 0);
-    qp_init(lcd, QP_ROTATION_180);  // Try different rotations
+    qp_init(lcd, QP_ROTATION_180);
 
     #ifdef BACKLIGHT_ENABLE
     backlight_enable();
     backlight_set(255);
     #endif
     // Turn on the LCD and clear the display
-    qp_power(lcd, true);
+    // qp_power(lcd, true);
 
     // my_image = qp_load_image_mem(gfx_face);
     // if (my_image != NULL) {
