@@ -8,44 +8,24 @@
 // clang-format off
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [0] = LAYOUT(
-                // Left Half
-                KC_NUM, KC_PSLS, KC_PAST,   KC_PMNS,                    KC_NO,  KC_ESC,     KC_NO,      KC_NO,  KC_NO,  KC_NO,              KC_NO,
-                KC_P7,  KC_P8,   KC_P9,     KC_PPLS,                    KC_NO,  KC_GRV,     KC_1,       KC_2,   KC_3,   KC_4,               KC_5,
-                KC_P4,  KC_P5,   KC_P6,     KC_PEQL,                    KC_NO,  KC_TAB,     KC_Q,       KC_W,   KC_E,   KC_R,               KC_T,
-                KC_P1,  KC_P2,   KC_P3,     KC_NO,                      KC_NO,  KC_LSFT,    KC_A,       KC_S,   KC_D,   KC_F,               KC_G,
-                KC_NO,  KC_P0,   KC_PDOT,   KC_PENT,                    KC_NO,  KC_CAPS,    KC_Z,       KC_X,   KC_C,   KC_V,               KC_B,
-                                                                                                                        KC_LALT,            KC_LCTL,
-                                                                                                                        LT(1, KC_LGUI),  KC_SPACE,
-
-                // Right Half
-                KC_NO,          KC_NO,          KC_NO,      KC_NO,      KC_NO,      KC_DEL,     KC_BSPC,                KC_NUM,   KC_PSLS, KC_PAST,   KC_PMNS,
-                KC_6,           KC_7,           KC_8,       KC_9,       KC_0,       KC_MINS,    KC_EQL,                 KC_P7,    KC_P8,   KC_P9,     KC_PPLS,
-                KC_Y,           KC_U,           KC_I,       KC_O,       KC_P,       KC_LBRC,    KC_RBRC,                KC_P4,    KC_P5,   KC_P6,     KC_PEQL,
-                KC_H,           KC_J,           KC_K,       KC_L,       KC_SCLN,    KC_QUOT,    KC_NO,                  KC_P1,    KC_P2,   KC_P3,     KC_NO,
-                KC_N,           KC_M,           KC_COMM,    KC_DOT,     KC_SLSH,    KC_MINS,    KC_RSFT,                KC_PENT,  KC_P0,   KC_PDOT,   KC_PENT,
-                KC_LALT,        KC_LCTL,                    KC_UP,
-                LT(1, KC_LGUI),  KC_SPACE,    KC_LEFT,    KC_DOWN,    KC_RIGHT
-
+                // Left Half Numpad                           Left Half                                                                                 Right Half                                                                                          Right Half Numpad
+                KC_NUM, KC_PSLS, KC_PAST,   KC_PMNS,          KC_NO,  KC_ESC,     KC_NO,      KC_NO,  KC_NO,    KC_NO,              KC_NO,              KC_NO,          KC_NO,          KC_NO,      KC_NO,      KC_NO,      KC_DEL,     KC_BSPC,            KC_NUM,   KC_PSLS, KC_PAST,   KC_PMNS,
+                KC_P7,  KC_P8,   KC_P9,     KC_PPLS,          KC_NO,  KC_GRV,     KC_1,       KC_2,   KC_3,     KC_4,               KC_5,               KC_6,           KC_7,           KC_8,       KC_9,       KC_0,       KC_MINS,    KC_EQL,             KC_P7,    KC_P8,   KC_P9,     KC_PPLS,
+                KC_P4,  KC_P5,   KC_P6,     KC_PEQL,          KC_NO,  KC_TAB,     KC_Q,       KC_W,   KC_E,     KC_R,               KC_T,               KC_Y,           KC_U,           KC_I,       KC_O,       KC_P,       KC_LBRC,    KC_RBRC,            KC_P4,    KC_P5,   KC_P6,     KC_PEQL,
+                KC_P1,  KC_P2,   KC_P3,     KC_NO,            KC_NO,  KC_LSFT,    KC_A,       KC_S,   KC_D,     KC_F,               KC_G,               KC_H,           KC_J,           KC_K,       KC_L,       KC_SCLN,    KC_QUOT,    KC_NO,              KC_P1,    KC_P2,   KC_P3,     KC_NO,
+                KC_NO,  KC_P0,   KC_PDOT,   KC_PENT,          KC_NO,  KC_CAPS,    KC_Z,       KC_X,   KC_C,     KC_V,               KC_B,               KC_N,           KC_M,           KC_COMM,    KC_DOT,     KC_SLSH,    KC_MINS,    KC_RSFT,            KC_PENT,  KC_P0,   KC_PDOT,   KC_PENT,
+                                                                                                                KC_LALT,            KC_LCTL,            KC_LALT,        KC_LCTL,                    KC_UP,
+                                                                                                                LT(1, KC_LGUI),     KC_SPACE,           LT(1, KC_LGUI), KC_SPACE,    KC_LEFT,    KC_DOWN,    KC_RIGHT
             ),
     [1] = LAYOUT(
-                // Left Half
-                KC_NUM, KC_PSLS, KC_PAST,   KC_PMNS,                    KC_NO,  KC_ESC,     KC_NO,      KC_NO,       KC_NO,     KC_NO,      KC_NO,
-                KC_P7,  KC_P8,   KC_P9,     KC_PPLS,                    KC_NO,  KC_GRV,     KC_1,       KC_2,        KC_3,      KC_4,       KC_5,
-                KC_P4,  KC_P5,   KC_P6,     KC_PEQL,                    KC_NO,  G(KC_TAB),  G(KC_Q),    G(KC_W),     G(KC_E),   G(KC_R),    G(KC_T),
-                KC_P1,  KC_P2,   KC_P3,     KC_NO,                      KC_NO,  KC_LSFT,    G(KC_A),    G(KC_S),     KC_D,      KC_F,       KC_G,
-                KC_NO,  KC_P0,   KC_PDOT,   KC_PENT,                    KC_NO,  KC_CAPS,    G(KC_Z),    G(KC_X),     G(KC_C),   G(KC_C),    G(KC_B),
-                                                                                                                                KC_LALT,    KC_LCTL,
-                                                                                                                                KC_LGUI,    G(KC_SPACE),
-
-                // Right Half
-                KC_NO,      KC_NO,      KC_NO,          KC_NO,      KC_NO,      KC_DEL,     G(KC_BSPC),             KC_NUM,   KC_PSLS, KC_PAST,   KC_PMNS,
-                KC_6,       KC_7,       KC_8,           KC_9,       KC_0,       KC_MINS,    KC_EQL,                 KC_P7,    KC_P8,   KC_P9,     KC_PPLS,
-                KC_Y,       G(KC_U),    G(KC_I),        KC_O,       G(KC_P),    KC_LBRC,    KC_RBRC,                KC_P4,    KC_P5,   KC_P6,     KC_PEQL,
-                KC_H,       KC_J,       KC_K,           G(KC_L),    KC_SCLN,    KC_QUOT,    KC_NO,                  KC_P1,    KC_P2,   KC_P3,     KC_NO,
-                G(KC_N),    KC_M,       KC_COMM,        KC_DOT,     G(KC_SLSH), KC_MINS,    KC_RSFT,                KC_PENT,  KC_P0,   KC_PDOT,   KC_PENT,
-                KC_MPRV,    KC_MNXT,                    KC_VOLU,
-                KC_LGUI,    KC_MPLY,     LAG(KC_LEFT),   KC_VOLD,    LAG(KC_RIGHT)
-
+                // Left Half Numpad                           Left Half                                                                                 Right Half                                                                                          Right Half Numpad
+                KC_NUM, KC_PSLS, KC_PAST,   KC_PMNS,          KC_NO,  KC_ESC,     KC_NO,      KC_NO,       KC_NO,       KC_NO,      KC_NO,              KC_NO,      KC_NO,      KC_NO,          KC_NO,      KC_NO,      KC_DEL,     G(KC_BSPC),             KC_NUM,   KC_PSLS, KC_PAST,   KC_PMNS,
+                KC_P7,  KC_P8,   KC_P9,     KC_PPLS,          KC_NO,  KC_GRV,     KC_1,       KC_2,        KC_3,        KC_4,       KC_5,               KC_6,       KC_7,       KC_8,           KC_9,       KC_0,       KC_MINS,    KC_EQL,                 KC_P7,    KC_P8,   KC_P9,     KC_PPLS,
+                KC_P4,  KC_P5,   KC_P6,     KC_PEQL,          KC_NO,  G(KC_TAB),  G(KC_Q),    G(KC_W),     G(KC_E),     G(KC_R),    G(KC_T),            KC_Y,       G(KC_U),    G(KC_I),        KC_O,       G(KC_P),    KC_LBRC,    KC_RBRC,                KC_P4,    KC_P5,   KC_P6,     KC_PEQL,
+                KC_P1,  KC_P2,   KC_P3,     KC_NO,            KC_NO,  KC_LSFT,    G(KC_A),    G(KC_S),     KC_D,        KC_F,       KC_G,               KC_H,       KC_J,       KC_K,           G(KC_L),    KC_SCLN,    KC_QUOT,    KC_NO,                  KC_P1,    KC_P2,   KC_P3,     KC_NO,
+                KC_NO,  KC_P0,   KC_PDOT,   KC_PENT,          KC_NO,  KC_CAPS,    G(KC_Z),    G(KC_X),     G(KC_C),     G(KC_V),    G(KC_B),            G(KC_N),    KC_M,       KC_COMM,        KC_DOT,     G(KC_SLSH), KC_MINS,    KC_RSFT,                KC_PENT,  KC_P0,   KC_PDOT,   KC_PENT,
+                                                                                                                        KC_LALT,    KC_LCTL,            KC_MPRV,    KC_MNXT,                    KC_VOLU,
+                                                                                                                        KC_LGUI,    G(KC_SPACE),        KC_LGUI,    KC_MPLY,     LAG(KC_LEFT),   KC_VOLD,    LAG(KC_RIGHT)
             ),
 };
 
