@@ -105,7 +105,7 @@ void keyboard_post_init_keymap(void) {
     wait_ms(200);
 
     // Initialize the LCD
-    lcd = qp_ili9341_make_spi_device(240, 320, LCD_CS_PIN, LCD_DC_PIN, LCD_RST_PIN, 4, 0);
+    lcd = qp_ili9341_make_spi_device(240, 320, LCD_CS_PIN, LCD_DC_PIN, LCD_RST_PIN, 1, 0);
     qp_init(lcd, QP_ROTATION_180);
 
     #ifdef BACKLIGHT_ENABLE
