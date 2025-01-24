@@ -1,0 +1,3 @@
+#ifndef LCD_ACTIVITY_TIMEOUT
+#    define LCD_ACTIVITY_TIMEOUT 60000
+#endif

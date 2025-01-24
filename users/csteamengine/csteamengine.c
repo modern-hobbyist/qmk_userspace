@@ -63,6 +63,7 @@ void keyboard_post_init_keymap(void) {
 }
 
 void keyboard_post_init_user(void) {
+    debug_enable=true;
     keyboard_post_init_keymap();
 }
 

@@ -6,3 +6,4 @@ QUANTUM_PAINTER_DRIVERS += ili9341_spi
 BACKLIGHT_ENABLE = no
 PWM_ENABLE = yes
 SERIAL_DRIVER = usart
+SRC += ./graphics/layout-1-left.qgf.c

@@ -6,7 +6,7 @@
 #include "csteamengine.h"
 #include "lib/layer_status/layer_status.h"
 #include <qp.h>
-// #include "graphics/face.qgf.h"
+#include "graphics/layout-1-left.qgf.h"
 
 painter_device_t lcd;
 #ifdef BACKLIGHT_ENABLE
@@ -27,11 +27,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
             ),
     [_FN0] = LAYOUT(
                 // Left Half Numpad                           Left Half                                                                                         Right Half                                                                                          Right Half Numpad
-                KC_NUM, KC_PSLS, KC_PAST,   KC_PMNS,          KC_NO,  KC_ESC,     KC_NO,      KC_NO,       KC_NO,       KC_NO,      KC_NO,                      KC_NO,      KC_NO,      KC_NO,          KC_NO,      KC_NO,      KC_DEL,     G(KC_BSPC),             KC_NUM,   KC_PSLS, KC_PAST,   KC_PMNS,
-                KC_P7,  KC_P8,   KC_P9,     KC_PPLS,          KC_NO,  KC_GRV,     KC_1,       KC_2,        KC_3,        KC_4,       KC_5,                       KC_6,       KC_7,       KC_8,           KC_9,       KC_0,       KC_MINS,    KC_EQL,                 KC_P7,    KC_P8,   KC_P9,     KC_PPLS,
-                KC_P4,  KC_P5,   KC_P6,     KC_PEQL,          KC_NO,  G(KC_TAB),  G(KC_Q),    G(KC_W),     G(KC_E),     G(KC_R),    G(KC_T),                    KC_Y,       G(KC_U),    G(KC_I),        KC_O,       G(KC_P),    KC_LBRC,    KC_RBRC,                KC_P4,    KC_P5,   KC_P6,     KC_PEQL,
-                KC_P1,  KC_P2,   KC_P3,     KC_NO,            KC_NO,  KC_LSFT,    G(KC_A),    G(KC_S),     KC_D,        KC_F,       KC_G,                       KC_H,       KC_J,       KC_K,           G(KC_L),    KC_SCLN,    KC_QUOT,    KC_NO,                  KC_P1,    KC_P2,   KC_P3,     KC_NO,
-                KC_NO,  KC_P0,   KC_PDOT,   KC_PENT,          KC_NO,  KC_CAPS,    G(KC_Z),    G(KC_X),     G(KC_C),     G(KC_V),    G(KC_B),                    G(KC_N),    KC_M,       KC_COMM,        KC_DOT,     G(KC_SLSH), KC_MINS,    KC_RSFT,                KC_PENT,  KC_P0,   KC_PDOT,   KC_PENT,
+                KC_NUM, KC_PSLS, KC_PAST,   KC_PMNS,          RGB_TOG,  KC_ESC,     KC_NO,      KC_NO,       KC_NO,       KC_NO,      KC_NO,                      KC_NO,      KC_NO,      KC_NO,          KC_NO,      KC_NO,      KC_DEL,     G(KC_BSPC),             KC_NUM,   KC_PSLS, KC_PAST,   KC_PMNS,
+                KC_P7,  KC_P8,   KC_P9,     KC_PPLS,          RGB_MOD,  KC_GRV,     KC_1,       KC_2,        KC_3,        KC_4,       KC_5,                       KC_6,       KC_7,       KC_8,           KC_9,       KC_0,       KC_MINS,    KC_EQL,                 KC_P7,    KC_P8,   KC_P9,     KC_PPLS,
+                KC_P4,  KC_P5,   KC_P6,     KC_PEQL,          RGB_RMOD, G(KC_TAB),  G(KC_Q),    G(KC_W),     G(KC_E),     G(KC_R),    G(KC_T),                    KC_Y,       G(KC_U),    G(KC_I),        KC_O,       G(KC_P),    KC_LBRC,    KC_RBRC,                KC_P4,    KC_P5,   KC_P6,     KC_PEQL,
+                KC_P1,  KC_P2,   KC_P3,     KC_NO,            KC_NO,    KC_LSFT,    G(KC_A),    G(KC_S),     KC_D,        KC_F,       KC_G,                       KC_H,       KC_J,       KC_K,           G(KC_L),    KC_SCLN,    KC_QUOT,    KC_NO,                  KC_P1,    KC_P2,   KC_P3,     KC_NO,
+                KC_NO,  KC_P0,   KC_PDOT,   KC_PENT,          KC_NO,    KC_CAPS,    G(KC_Z),    G(KC_X),     G(KC_C),     G(KC_V),    G(KC_B),                    G(KC_N),    KC_M,       KC_COMM,        KC_DOT,     G(KC_SLSH), KC_MINS,    KC_RSFT,                KC_PENT,  KC_P0,   KC_PDOT,   KC_PENT,
                                                                                                                         KC_LALT,    KC_LCTL,                    KC_MPRV,    KC_MNXT,                    KC_VOLU,
                                                                                                                         KC_LGUI,    G(KC_SPACE),                KC_RGUI,    KC_MPLY,    LAG(KC_LEFT),   KC_VOLD,    LAG(KC_RIGHT)
             ),
@@ -68,6 +68,8 @@ bool            is_lcd_timeout = false;  // store if RGB has timed out or not in
 void refresh_lcd(void) {
     lcd_key_timer = timer_read32(); // store time of last refresh
     if (is_lcd_timeout) {
+
+        writePinHigh(LCD_ENABLE_PIN);
         qp_power(lcd, true);
 
         #ifdef BACKLIGHT_ENABLE
@@ -92,13 +94,15 @@ void check_lcd_timeout(void) {
         backlight_set(0);
         #endif
 
+
+        writePinLow(LCD_ENABLE_PIN);
         qp_power(lcd, false);
         is_lcd_timeout = true;
     }
 }
 #endif
 
-// static painter_image_handle_t my_image;
+static painter_image_handle_t my_image;
 
 void keyboard_post_init_keymap(void) {
     // Let the LCD get some power...
@@ -113,30 +117,22 @@ void keyboard_post_init_keymap(void) {
     backlight_set(255);
     #endif
     // Turn on the LCD and clear the display
+
+    writePinHigh(LCD_ENABLE_PIN);
     qp_power(lcd, true);
 
     qp_rect(lcd, 0, 0, 240, 320, 0, 0, 0, true);
 
-    // my_image = qp_load_image_mem(gfx_face);
-    // if (my_image != NULL) {
-    //     qp_drawimage(lcd, 0, 20, my_image);
-    // }
+    my_image = qp_load_image_mem(gfx_layout_1_left);
+    if (my_image != NULL) {
+        qp_drawimage(lcd, 0, 20, my_image);
+    }
 }
 
 void housekeeping_task_keymap(void) {
     #ifdef LCD_ACTIVITY_TIMEOUT
         check_lcd_timeout();
     #endif
-
-    static uint32_t last_draw = 0;
-    if (timer_elapsed32(last_draw) > 33) { // Throttle to 30fps
-        last_draw = timer_read32();
-        // Draw r=4 filled circles down the left side of the display
-        for (int i = 0; i < 239; i+=8) {
-            qp_circle(lcd, 4, 4+i, 4, i, 255, 255, true);
-        }
-        qp_flush(lcd);
-    }
 }
 
 void suspend_power_down_keymap(void) {
@@ -147,10 +143,12 @@ void suspend_power_down_keymap(void) {
     backlight_set(0);
     #endif
 
+    writePinLow(LCD_ENABLE_PIN);
     qp_power(lcd, false);
 }
 
 void suspend_wakeup_init_keymap(void) {
+    writePinHigh(LCD_ENABLE_PIN);
     qp_power(lcd, true);
 
     #ifdef BACKLIGHT_ENABLE
