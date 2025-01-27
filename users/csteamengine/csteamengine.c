@@ -67,6 +67,15 @@ void keyboard_post_init_user(void) {
     keyboard_post_init_keymap();
 }
 
+
+__attribute__ ((weak))
+void keyboard_pre_init_keymap(void) {
+}
+
+void keyboard_pre_init_user(void) {
+    keyboard_pre_init_keymap();
+}
+
 /* Runs after each encoder tick, check if activity occurred */
 void post_encoder_update_user(uint8_t index, bool clockwise) {
 #ifdef RGB_MATRIX_TIMEOUT
