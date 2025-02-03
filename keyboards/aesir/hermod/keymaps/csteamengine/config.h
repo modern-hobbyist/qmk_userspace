@@ -1,6 +1,7 @@
-#ifndef LCD_ACTIVITY_TIMEOUT
-#    define LCD_ACTIVITY_TIMEOUT 10000
-#endif
+// #ifndef LCD_ACTIVITY_TIMEOUT
+#undef LCD_ACTIVITY_TIMEOUT
+#define LCD_ACTIVITY_TIMEOUT 600000
+// #endif
 
 // Uncomment this if you want to configure a secrets.h file
 #define SECRETS_H

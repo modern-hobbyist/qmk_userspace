@@ -5,10 +5,24 @@
 #include "quantum.h"
 #include "csteamengine.h"
 #include "lib/layer_status/layer_status.h"
+
+#include "print.h"
+
+
+#ifdef LCD_ACTIVITY_TIMEOUT
 #include <qp.h>
 #include "./norse20.qff.h"
+#include "./hermod-logo.qgf.h"
+#include "./left-base-layout.qgf.h"
+#include "./right-base-layout.qgf.h"
+#define LCD_RENDER_TIMEOUT 100
+
+static painter_font_handle_t my_font;
+static uint16_t last_update = 0;
 
 painter_device_t lcd;
+#endif
+
 #ifdef BACKLIGHT_ENABLE
 static uint8_t last_backlight = 255;
 #endif
@@ -16,8 +30,6 @@ static uint8_t last_backlight = 255;
 #ifdef SECRETS_H
 #include "secrets.h"
 #endif
-
-static painter_font_handle_t my_font;
 
 enum custom_keycodes {
     CS_MPLY = SAFE_RANGE,
@@ -78,29 +90,29 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [_BASE] = LAYOUT(
                 // Left Half Numpad                           Left Half                                                                                                                                                             Right Half                                                                                                  Right Half Numpad
                 KC_NUM, KC_PSLS, KC_PAST,   KC_PMNS,          REFACTOR,         TD(TD_ESC_CAPS),       SCREEN_RECORDING_1, SCREEN_SHOT_TO_CLIPBOARD,   SCREEN_SHOT_AREA,    SCREEN_SHOT_SCREEN,     MAC_EMOJIS,                     TD(TD_PW_ONE),      TD(TD_PW_TWO),  TD(TD_PW_THREE),    KC_NO,      KC_NO,      KC_DEL,     KC_BSPC,        KC_NUM,   KC_PSLS, KC_PAST,   KC_PMNS,
-                KC_P7,  KC_P8,   KC_P9,     KC_PPLS,          EXTRACT_METHOD,   KC_GRV,                KC_1,               KC_2,                       KC_3,                KC_4,                   KC_5,                           KC_6,               KC_7,           KC_8,               KC_9,       KC_0,       KC_MINS,    KC_EQL,         KC_P7,    KC_P8,   KC_P9,     KC_PPLS,
+                KC_P7,  KC_P8,   KC_P9,     KC_PPLS,          EXTRACT_METHOD,   LT(_FN0, KC_GRV),      KC_1,               KC_2,                       KC_3,                KC_4,                   KC_5,                           KC_6,               KC_7,           KC_8,               KC_9,       KC_0,       KC_MINS,    KC_EQL,         KC_P7,    KC_P8,   KC_P9,     KC_PPLS,
                 KC_P4,  KC_P5,   KC_P6,     KC_PEQL,          TD(TD_COPY_FILE), KC_TAB,                KC_Q,               KC_W,                       KC_E,                KC_R,                   KC_T,                           KC_Y,               KC_U,           KC_I,               KC_O,       KC_P,       KC_LBRC,    KC_RBRC,        KC_P4,    KC_P5,   KC_P6,     KC_PEQL,
                 KC_P1,  KC_P2,   KC_P3,     KC_NO,            TD(TD_OBSIDIAN),  KC_LSFT,               KC_A,               KC_S,                       KC_D,                KC_F,                   KC_G,                           KC_H,               KC_J,           KC_K,               KC_L,       KC_SCLN,    KC_QUOT,    KC_ENT,         KC_P1,    KC_P2,   KC_P3,     KC_NO,
-                KC_NO,  KC_P0,   KC_PDOT,   KC_PENT,          TD(TD_TICK_TICK), SELECT_WORD,           KC_Z,               KC_X,                       KC_C,                KC_V,                   KC_B,                           KC_N,               KC_M,           KC_COMM,            KC_DOT,     KC_SLSH,    KC_MINS,    KC_RSFT,        KC_PENT,  KC_P0,   KC_PDOT,   KC_PENT,
+                KC_NO,  KC_P0,   KC_PDOT,   KC_PENT,          TD(TD_TICK_TICK), SELECT_WORD,           KC_Z,               KC_X,                       KC_C,                KC_V,                   KC_B,                           KC_N,               KC_M,           KC_COMM,            KC_DOT,     KC_SLSH,    KC_BSLS,    KC_RSFT,        KC_PENT,  KC_P0,   KC_PDOT,   KC_PENT,
                                                                                                                                                                             TD(TD_LALT_PAR),        TD(TD_LCTL_PAR),                TD(TD_RALT_PAR),    TD(TD_RCTL_PAR),                    KC_UP,
                                                                                                                                                                             LM(_FN0, MOD_LGUI),     KC_SPACE,                       LM(_FN0, MOD_RGUI), KC_SPACE,       KC_LEFT,            KC_DOWN,    KC_RIGHT
             ),
     [_FN0] = LAYOUT(
                 // Left Half Numpad                           Left Half                                                                                     Right Half                                                                                          Right Half Numpad
-                KC_NUM, KC_PSLS, KC_PAST,   KC_PMNS,          RGB_TOG,      KC_ESC,     RGB_VAD,    RGB_VAI,  KC_NO,    KC_NO,      KC_NO,                  CS_MPRV,    CS_MPLY,    CS_MNXT,        KC_NO,      KC_NO,      KC_DEL,     G(KC_BSPC),             KC_NUM,   KC_PSLS, KC_PAST,   KC_PMNS,
+                KC_NUM, KC_PSLS, KC_PAST,   KC_PMNS,          RGB_TOG,      KC_ESC,     RGB_VAD,    RGB_VAI,  KC_NO,    KC_NO,      KC_NO,                  KC_MPRV,    KC_MPLY,    KC_MNXT,        KC_NO,      KC_NO,      KC_DEL,     G(KC_BSPC),             KC_NUM,   KC_PSLS, KC_PAST,   KC_PMNS,
                 KC_P7,  KC_P8,   KC_P9,     KC_PPLS,          RGB_MOD,      KC_GRV,     KC_1,       KC_2,     KC_3,     KC_4,       KC_5,                   KC_6,       KC_7,       KC_8,           KC_9,       KC_0,       KC_MINS,    KC_EQL,                 KC_P7,    KC_P8,   KC_P9,     KC_PPLS,
                 KC_P4,  KC_P5,   KC_P6,     KC_PEQL,          RGB_RMOD,     KC_TAB,     KC_Q,       KC_W,     KC_E,     KC_R,       KC_T,                   KC_Y,       KC_U,       KC_I,           KC_O,       KC_P,       KC_LBRC,    KC_RBRC,                KC_P4,    KC_P5,   KC_P6,     KC_PEQL,
-                KC_P1,  KC_P2,   KC_P3,     KC_NO,            RGB_HUI,      KC_LSFT,    KC_A,       KC_S,     KC_D,     KC_F,       KC_G,                   KC_H,       KC_J,       KC_K,           KC_L,       KC_SCLN,    KC_QUOT,    KC_ENT,                  KC_P1,    KC_P2,   KC_P3,     KC_NO,
+                KC_P1,  KC_P2,   KC_P3,     KC_NO,            RGB_HUI,      KC_LSFT,    KC_A,       KC_S,     KC_D,     KC_F,       KC_G,                   KC_H,       KC_J,       KC_K,           KC_L,       KC_SCLN,    KC_QUOT,    KC_ENT,                 KC_P1,    KC_P2,   KC_P3,     KC_NO,
                 KC_NO,  KC_P0,   KC_PDOT,   KC_PENT,          RGB_HUD,      KC_CAPS,    KC_Z,       KC_X,     KC_C,     KC_V,       KC_B,                   KC_N,       KC_M,       KC_COMM,        KC_DOT,     KC_SLSH,    KC_MINS,    KC_RSFT,                KC_PENT,  KC_P0,   KC_PDOT,   KC_PENT,
-                                                                                                                        KC_LALT,    KC_LCTL,                CS_MPRV,    CS_MNXT,                    CS_UP,
-                                                                                                                        KC_LGUI,    KC_SPACE,               KC_RGUI,    KC_SPACE,   LAG(KC_LEFT),   CS_DOWN,    LAG(KC_RIGHT)
+                                                                                                                        KC_LALT,    KC_LCTL,                KC_VOLD,    KC_VOLU,                    KC_UP,
+                                                                                                                        KC_LGUI,    KC_SPACE,               KC_RGUI,    KC_SPACE,   LAG(KC_LEFT),   KC_DOWN,    LAG(KC_RIGHT)
             ),
     [_FN1] = LAYOUT(
                 // Left Half Numpad                           Left Half                                                                                 Right Half                                                                                          Right Half Numpad
                 KC_NUM, KC_PSLS, KC_PAST,   KC_PMNS,          KC_NO,  KC_ESC,     KC_NO,    KC_NO,  KC_NO,  KC_NO,              KC_NO,                  KC_NO,              KC_NO,      KC_NO,      KC_NO,      KC_NO,      KC_DEL,     KC_BSPC,            KC_NUM,   KC_PSLS, KC_PAST,   KC_PMNS,
                 KC_P7,  KC_P8,   KC_P9,     KC_PPLS,          KC_NO,  KC_GRV,     KC_1,     KC_2,   KC_3,   KC_4,               KC_5,                   KC_6,               KC_7,       KC_8,       KC_9,       KC_0,       KC_MINS,    KC_EQL,             KC_P7,    KC_P8,   KC_P9,     KC_PPLS,
                 KC_P4,  KC_P5,   KC_P6,     KC_PEQL,          KC_NO,  KC_TAB,     KC_Q,     KC_W,   KC_E,   KC_R,               KC_T,                   KC_Y,               KC_U,       KC_I,       KC_O,       KC_P,       KC_LBRC,    KC_RBRC,            KC_P4,    KC_P5,   KC_P6,     KC_PEQL,
-                KC_P1,  KC_P2,   KC_P3,     KC_NO,            KC_NO,  KC_LSFT,    KC_A,     KC_S,   KC_D,   KC_F,               KC_G,                   KC_H,               KC_J,       KC_K,       KC_L,       KC_SCLN,    KC_QUOT,    KC_ENT,              KC_P1,    KC_P2,   KC_P3,     KC_NO,
+                KC_P1,  KC_P2,   KC_P3,     KC_NO,            KC_NO,  KC_LSFT,    KC_A,     KC_S,   KC_D,   KC_F,               KC_G,                   KC_H,               KC_J,       KC_K,       KC_L,       KC_SCLN,    KC_QUOT,    KC_ENT,             KC_P1,    KC_P2,   KC_P3,     KC_NO,
                 KC_NO,  KC_P0,   KC_PDOT,   KC_PENT,          KC_NO,  KC_CAPS,    KC_Z,     KC_X,   KC_C,   KC_V,               KC_B,                   KC_N,               KC_M,       KC_COMM,    KC_DOT,     KC_SLSH,    KC_MINS,    KC_RSFT,            KC_PENT,  KC_P0,   KC_PDOT,   KC_PENT,
                                                                                                             KC_LALT,            KC_LCTL,                KC_LALT,            KC_LCTL,                KC_UP,
                                                                                                             KC_LGUI,            KC_SPACE,               KC_RGUI,            KC_SPACE,   KC_LEFT,    KC_DOWN,    KC_RIGHT
@@ -124,13 +136,114 @@ static uint32_t lcd_key_timer;
 static void     refresh_lcd(void);       // refreshes the activity timer and RGB, invoke whenever any activity happens
 static void     check_lcd_timeout(void); // checks if enough time has passed for RGB to timeout
 bool            is_lcd_timeout = false;  // store if RGB has timed out or not in a boolean
+bool            peripherals_on = false;
+static void     render_lcd(void);
+static void     init_lcd(void);
+static void     power_off_lcd(void);
+static void     render_static_text(void);
+static painter_image_handle_t hermod_logo;
+static painter_image_handle_t left_base_layout;
+static painter_image_handle_t right_base_layout;
+
+const char *current_layer_name(void) {
+    switch (get_highest_layer(layer_state)) {
+        case _BASE:
+            return "Base";
+        case _FN0:
+            return "Layer 1";
+        case _FN1:
+            return "Layer 2";
+        case _FN2:
+            return "Layer 3";
+    }
+    return "unknown";
+}
+
+void init_lcd(void) {
+    qp_init(lcd, QP_ROTATION_0);
+
+    // Let the LCD get some power...
+    wait_ms(200);
+    gpio_write_pin_high(LCD_ENABLE_PIN);
+
+    // Turn on the LCD and clear the display
+    qp_rect(lcd, 0, 0, 240, 320, 6, 0, 0, true);
+
+    my_font = qp_load_font_mem(font_norse20);
+    hermod_logo = qp_load_image_mem(gfx_hermod_logo);
+    left_base_layout = qp_load_image_mem(gfx_left_base_layout);
+    right_base_layout = qp_load_image_mem(gfx_right_base_layout);
+
+    // Turn LCD On
+    qp_power(lcd, true);
+}
+
+void render_static_text(void) {
+    if (my_font != NULL) {
+        static const char *title = "Project Aesir | Hermod";
+
+        const char      *layer_name = current_layer_name();
+        qp_drawtext(lcd, (120 - qp_textwidth(my_font, title)/2), 2, my_font, title);
+        qp_drawtext(lcd, (120 - qp_textwidth(my_font, layer_name)/2), 27, my_font, layer_name);
+    }
+
+    if (is_keyboard_left()) {
+        if (left_base_layout != NULL) {
+            qp_drawimage(lcd, 0, 55, left_base_layout);
+        }
+
+        if (hermod_logo != NULL) {
+            qp_drawimage(lcd, 10, (320 - hermod_logo->height - 10), hermod_logo);
+        }
+    } else {
+        if (left_base_layout != NULL) {
+            qp_drawimage(lcd, 0, 55, right_base_layout);
+        }
+
+        if (hermod_logo != NULL) {
+            qp_drawimage(lcd, (240 - hermod_logo->width -10), (320 - hermod_logo->height - 10), hermod_logo);
+        }
+    }
+
+
+}
+
+void power_off_lcd(void) {
+    // Turn on the LCD and clear the display
+    qp_power(lcd, false);
+
+    // Disable power to display
+    gpio_write_pin_low(LCD_ENABLE_PIN);
+}
+
+void render_lcd() {
+    bool    layer_state_redraw = false;
+    bool    render_updates = false;
+    static uint32_t last_layer_state   = 0;
+    if (last_layer_state != layer_state) {
+        last_layer_state   = layer_state;
+        layer_state_redraw = true;
+        render_updates = true;
+    }
+
+    if(layer_state_redraw) {
+        const char      *layer_name = current_layer_name();
+        print("Here I am!!!");
+        qp_rect(lcd, 0, 25, 240, 45, 6, 0, 0, true);
+        qp_drawtext(lcd, (120 - qp_textwidth(my_font, layer_name)/2), 27, my_font, layer_name);
+    }
+
+    if(render_updates) {
+        // qp_flush(lcd);
+    }
+}
 
 void refresh_lcd(void) {
     lcd_key_timer = timer_read32(); // store time of last refresh
     if (is_lcd_timeout) {
-
-        gpio_write_pin_low(LCD_ENABLE_PIN);
-        qp_power(lcd, true);
+        // Turn LCD On
+        init_lcd();
+        render_static_text();
 
         #ifdef BACKLIGHT_ENABLE
         if (last_backlight != 255) {
@@ -144,6 +257,8 @@ void refresh_lcd(void) {
 }
 
 void check_lcd_timeout(void) {
+    peripherals_on = last_input_activity_elapsed() < LCD_ACTIVITY_TIMEOUT;
+
     if (!is_lcd_timeout && timer_elapsed32(lcd_key_timer) > LCD_ACTIVITY_TIMEOUT) // check if RGB has already timeout and if enough time has passed
     {
         #ifdef BACKLIGHT_ENABLE
@@ -154,64 +269,45 @@ void check_lcd_timeout(void) {
         backlight_set(0);
         #endif
 
+        power_off_lcd();
 
-        gpio_write_pin_low(LCD_ENABLE_PIN);
-        qp_power(lcd, false);
         is_lcd_timeout = true;
     }
 }
 #endif
 
 void keyboard_pre_init_keymap(void) {
-    gpio_set_pin_output(LCD_ENABLE_PIN);
+    #ifdef LCD_ACTIVITY_TIMEOUT
+        gpio_set_pin_output(LCD_ENABLE_PIN);
 
-    gpio_write_pin_low(LCD_ENABLE_PIN);
+        // Turn LCD Off for now
+        gpio_write_pin_low(LCD_ENABLE_PIN);
+    #endif
 }
 
 void keyboard_post_init_keymap(void) {
-    // Let the LCD get some power...
-    wait_ms(200);
-
+    #ifdef LCD_ACTIVITY_TIMEOUT
     // Initialize the LCD
     lcd = qp_ili9341_make_spi_device(320, 240, LCD_CS_PIN, LCD_DC_PIN, LCD_RST_PIN, 1, 0);
-    qp_init(lcd, QP_ROTATION_0);
+    init_lcd();
+    render_static_text();
+    render_lcd();
 
     #ifdef BACKLIGHT_ENABLE
     backlight_enable();
     backlight_set(255);
     #endif
-    // Turn on the LCD and clear the display
-    qp_rect(lcd, 0, 0, 240, 320, 6, 0, 0, true);
-
-    my_font = qp_load_font_mem(font_norse20);
-    if (my_font != NULL) {
-        static const char *text = "Aesir | Project Hermod";
-        int16_t width = qp_textwidth(my_font, text);
-
-        qp_drawtext(lcd, (120 - width/2), (160 - my_font->line_height/2), my_font, text);
-    }
-
-    if (is_keyboard_left()) {
-        static const char *text = "Left";
-        int16_t width = qp_textwidth(my_font, text);
-
-        // TODO
-
-        qp_drawtext(lcd, (120 - width/2), 0, my_font, text);
-    } else {
-        static const char *text = "Right";
-        int16_t width = qp_textwidth(my_font, text);
-
-        qp_drawtext(lcd, (120 - width/2), 0, my_font, text);
-    }
-
-    gpio_write_pin_high(LCD_ENABLE_PIN);
-    qp_power(lcd, true);
+    #endif
 }
 
 void housekeeping_task_keymap(void) {
     #ifdef LCD_ACTIVITY_TIMEOUT
         check_lcd_timeout();
+
+        if(!is_lcd_timeout && peripherals_on) {
+            render_lcd();
+            last_update = timer_read();
+        }
     #endif
 }
 
@@ -223,13 +319,19 @@ void suspend_power_down_keymap(void) {
     backlight_set(0);
     #endif
 
-    gpio_write_pin_low(LCD_ENABLE_PIN);
-    qp_power(lcd, false);
+    #ifdef LCD_ACTIVITY_TIMEOUT
+        // Turn LCD Off
+        power_off_lcd();
+    #endif
 }
 
 void suspend_wakeup_init_keymap(void) {
-    gpio_write_pin_low(LCD_ENABLE_PIN);
-    qp_power(lcd, true);
+    #ifdef LCD_ACTIVITY_TIMEOUT
+        // Turn LCD On
+        init_lcd();
+        render_static_text();
+        render_lcd();
+    #endif
 
     #ifdef BACKLIGHT_ENABLE
     if (last_backlight != 255) {
@@ -237,8 +339,6 @@ void suspend_wakeup_init_keymap(void) {
     }
     last_backlight = 255;
     #endif
-
-    qp_flush(lcd);
 }
 
 bool process_record_keymap (uint16_t keycode, keyrecord_t *record) {
@@ -248,47 +348,62 @@ bool process_record_keymap (uint16_t keycode, keyrecord_t *record) {
 
         #endif
 
+        // uprintf("Key pressed: 0x%X, Mods: 0x%X\n", keycode, get_mods());
 
+        // uint8_t mods = get_mods();
+
+        // // Remove the GUI modifier before handling the keycode
+        // set_mods(mods & ~MOD_MASK_GUI);
+        // uprintf("Mods after: 0x%X", get_mods());
+
+        // uprintf("Keycode: 0x%X\n", keycode);
+        // uprintf("KC_MPLY: 0x%X\n", KC_MPLY);
+        // // Checking only the keycodes we want to trigger regardless of the mods
+        // switch (keycode) {
+        //     case CS_MPLY:
+        //         if (record->event.pressed) {
+        //             tap_code(KC_MPLY);
+        //         } else {
+        //         }
+        //         break;
+        //     case CS_MNXT:
+
+        //         if (record->event.pressed) {
+        //             SEND_STRING(SS_TAP(X_MNXT));
+        //         } else {
+        //         }
+        //         break;
+        //     case CS_MPRV:
+
+        //         if (record->event.pressed) {
+        //             SEND_STRING(SS_TAP(X_MPRV));
+        //         } else {
+        //         }
+        //         break;
+        //     case CS_UP:
+
+        //         if (record->event.pressed) {
+        //             SEND_STRING(SS_TAP(X_VOLU));
+        //         } else {
+        //         }
+        //         break;
+        //     case CS_DOWN:
+
+        //         if (record->event.pressed) {
+        //             SEND_STRING(SS_TAP(X_VOLD));
+        //         } else {
+        //         }
+        //         break;
+        // }
+
+        // // Restore the original mods after handling the keycode
+        // set_mods(mods);
+        // return false;
     }
 
-    switch(keycode) {
-        case CS_MPLY:
-            if (record->event.pressed) {
-                SEND_STRING(SS_TAP(X_X));
-            } else {
-            }
-            break;
-        case CS_MNXT:
 
-            if (record->event.pressed) {
-                SEND_STRING(SS_TAP(X_MNXT));
-            } else {
-            }
-            break;
-        case CS_MPRV:
 
-            if (record->event.pressed) {
-                SEND_STRING(SS_TAP(X_MPRV));
-            } else {
-            }
-            break;
-        case CS_UP:
-
-            if (record->event.pressed) {
-                SEND_STRING(SS_TAP(X_VOLU));
-            } else {
-            }
-            break;
-        case CS_DOWN:
-
-            if (record->event.pressed) {
-                SEND_STRING(SS_TAP(X_VOLD));
-            } else {
-            }
-            break;
-    }
-
-  return true;
+    return true;
 }
 
 /// ================ TAP DANCE CONFIG =================

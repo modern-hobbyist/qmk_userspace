@@ -8,4 +8,7 @@ PWM_ENABLE = yes
 SERIAL_DRIVER = usart
 # SRC += ./graphics/layout-1-left.qgf.c
 SRC += ./norse20.qff.c
+SRC += ./hermod-logo.qgf.c
+SRC += ./left-base-layout.qgf.c
+SRC += ./right-base-layout.qgf.c
 TAP_DANCE_ENABLE = yes
