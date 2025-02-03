@@ -144,6 +144,19 @@ static void     render_static_text(void);
 static painter_image_handle_t hermod_logo;
 static painter_image_handle_t left_base_layout;
 static painter_image_handle_t right_base_layout;
+static uint32_t last_layer_state = -1;
+uint8_t last_rgb_mode = -1;
+bool last_caps = true;
+
+const char *current_rgb_mode(void) {
+    switch(rgblight_get_mode()) {
+        case 2:
+            return "Cycle";
+        default:
+            return "Static";
+    }
+    return "Static";
+}
 
 const char *current_layer_name(void) {
     switch (get_highest_layer(layer_state)) {
@@ -181,10 +194,20 @@ void init_lcd(void) {
 void render_static_text(void) {
     if (my_font != NULL) {
         static const char *title = "Project Aesir | Hermod";
+        static const char *caps_title = "Caps";
+        static const char *layer_title = "Layer";
+        static const char *rgb_title = "RGB";
 
-        const char      *layer_name = current_layer_name();
-        qp_drawtext(lcd, (120 - qp_textwidth(my_font, title)/2), 2, my_font, title);
-        qp_drawtext(lcd, (120 - qp_textwidth(my_font, layer_name)/2), 27, my_font, layer_name);
+
+        if(is_keyboard_left()) {
+            qp_drawtext(lcd, (240 - qp_textwidth(my_font, title) - 2), (320 - 20 - 2), my_font, title);
+        } else {
+            qp_drawtext(lcd, 2, (320 - 20 - 2), my_font, title);
+        }
+
+        qp_drawtext(lcd, 2, 2, my_font, caps_title);
+        qp_drawtext(lcd, (120 - qp_textwidth(my_font, layer_title)/2), 2, my_font, layer_title);
+        qp_drawtext(lcd, (240 - qp_textwidth(my_font, rgb_title) - 2), 2, my_font, rgb_title);
     }
 
     if (is_keyboard_left()) {
@@ -204,8 +227,6 @@ void render_static_text(void) {
             qp_drawimage(lcd, (240 - hermod_logo->width -10), (320 - hermod_logo->height - 10), hermod_logo);
         }
     }
-
-
 }
 
 void power_off_lcd(void) {
@@ -217,24 +238,41 @@ void power_off_lcd(void) {
 }
 
 void render_lcd() {
-    bool    layer_state_redraw = false;
-    bool    render_updates = false;
-    static uint32_t last_layer_state   = 0;
-    if (last_layer_state != layer_state) {
-        last_layer_state   = layer_state;
-        layer_state_redraw = true;
-        render_updates = true;
-    }
+    const uint8_t curr_rgb_mode = rgblight_get_mode();
+    bool curr_caps = host_keyboard_led_state().caps_lock;
 
-    if(layer_state_redraw) {
+    if(last_layer_state != layer_state) {
+        last_layer_state   = layer_state;
         const char      *layer_name = current_layer_name();
-        print("Here I am!!!");
-        qp_rect(lcd, 0, 25, 240, 45, 6, 0, 0, true);
+        qp_rect(lcd, 80, 22, 160, 50, 6, 0, 0, true);
         qp_drawtext(lcd, (120 - qp_textwidth(my_font, layer_name)/2), 27, my_font, layer_name);
     }
 
-    if(render_updates) {
-        // qp_flush(lcd);
+    if(curr_rgb_mode != last_rgb_mode) {
+        last_rgb_mode = curr_rgb_mode;
+        const char * rgb_mode = current_rgb_mode();
+
+        // Rect to clear that area
+        qp_rect(lcd, 160, 22, 240, 50, 6, 0, 0, true);
+
+        // RGB Profile
+        qp_drawtext(lcd, (240 - qp_textwidth(my_font, rgb_mode) - 2), 27, my_font, rgb_mode);
+    }
+
+    // Caps
+    if(curr_caps != last_caps) {
+        last_caps = curr_caps;
+
+        // Rect to clear that area
+        qp_rect(lcd, 0, 22, 80, 50, 6, 0, 0, true);
+
+        if (curr_caps) {
+            // Caps Lock is on
+            qp_drawtext(lcd, 2, 27, my_font, "On");
+        } else {
+            // Caps Lock is off
+            qp_drawtext(lcd, 2, 27, my_font, "Off");
+        }
     }
 }
 
