@@ -275,7 +275,7 @@ void render_lcd(bool force) {
 void refresh_lcd(void) {
     lcd_key_timer = timer_read32(); // store time of last refresh
     if (is_lcd_timeout) {
-        // Turn LCD On
+        // Turn LCD  On
         init_lcd();
         render_static_text();
         render_lcd(true);
