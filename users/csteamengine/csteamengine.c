@@ -9,8 +9,9 @@
 #include "quantum.h"
 
 // OLED animation
+#ifdef OLED_ENABLE
 #include "lib/logo.h"
-
+#endif
 
 #ifdef RGB_MATRIX_TIMEOUT
 static uint32_t key_timer;               // timer for last keyboard activity, use 32bit value and function to make longer idle time possible

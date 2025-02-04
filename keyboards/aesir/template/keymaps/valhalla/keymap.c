@@ -102,7 +102,7 @@ void check_lcd_timeout(void) {
 }
 #endif
 
-static painter_image_handle_t my_image;
+// static painter_image_handle_t my_image;
 
 void keyboard_post_init_keymap(void) {
     // Let the LCD get some power...

@@ -8,13 +8,12 @@
 
 #include "print.h"
 
-
 #ifdef LCD_ACTIVITY_TIMEOUT
 #include <qp.h>
-#include "./norse20.qff.h"
-#include "./hermod-logo.qgf.h"
-#include "./left-base-layout.qgf.h"
-#include "./right-base-layout.qgf.h"
+#include "./fonts/norse20.qff.h"
+#include "./graphics/hermod-logo.qgf.h"
+#include "./graphics/left-base-layout.qgf.h"
+#include "./graphics/right-base-layout.qgf.h"
 #define LCD_RENDER_TIMEOUT 100
 
 static painter_font_handle_t my_font;
@@ -175,9 +174,10 @@ const char *current_layer_name(void) {
 void init_lcd(void) {
     qp_init(lcd, QP_ROTATION_0);
 
+    gpio_write_pin_high(LCD_ENABLE_PIN);
+
     // Let the LCD get some power...
     wait_ms(200);
-    gpio_write_pin_high(LCD_ENABLE_PIN);
 
     // Turn on the LCD and clear the display
     qp_rect(lcd, 0, 0, 240, 320, 6, 0, 0, true);
@@ -282,6 +282,7 @@ void refresh_lcd(void) {
         // Turn LCD On
         init_lcd();
         render_static_text();
+        render_lcd();
 
         #ifdef BACKLIGHT_ENABLE
         if (last_backlight != 255) {

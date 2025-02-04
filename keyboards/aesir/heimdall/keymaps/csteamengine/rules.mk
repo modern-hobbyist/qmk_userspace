@@ -11,3 +11,6 @@ LTO_ENABLE = yes
 VIA_ENABLE = yes
 TAP_DANCE_ENABLE = yes
 USER_NAME := csteamengine
+
+SRC += ./lib/layer_status/layer_status.c
+SRC += ./lib/logo.c

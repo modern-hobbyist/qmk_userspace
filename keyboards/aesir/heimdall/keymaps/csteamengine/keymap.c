@@ -3,7 +3,6 @@
 
 #include QMK_KEYBOARD_H
 
-// #include "secrets.h"
 #include "csteamengine.h"
 #ifdef SECRETS_H
 #include "secrets.h"
