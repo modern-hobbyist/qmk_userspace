@@ -8,6 +8,7 @@
 
 #include "print.h"
 
+
 #ifdef LCD_ACTIVITY_TIMEOUT
 #include <qp.h>
 #include "./fonts/norse20.qff.h"
@@ -136,7 +137,7 @@ static void     refresh_lcd(void);       // refreshes the activity timer and RGB
 static void     check_lcd_timeout(void); // checks if enough time has passed for RGB to timeout
 bool            is_lcd_timeout = false;  // store if RGB has timed out or not in a boolean
 bool            peripherals_on = false;
-static void     render_lcd(void);
+static void     render_lcd(bool force);
 static void     init_lcd(void);
 static void     power_off_lcd(void);
 static void     render_static_text(void);
@@ -182,11 +183,6 @@ void init_lcd(void) {
     // Turn on the LCD and clear the display
     qp_rect(lcd, 0, 0, 240, 320, 6, 0, 0, true);
 
-    my_font = qp_load_font_mem(font_norse20);
-    hermod_logo = qp_load_image_mem(gfx_hermod_logo);
-    left_base_layout = qp_load_image_mem(gfx_left_base_layout);
-    right_base_layout = qp_load_image_mem(gfx_right_base_layout);
-
     // Turn LCD On
     qp_power(lcd, true);
 }
@@ -231,24 +227,24 @@ void render_static_text(void) {
 
 void power_off_lcd(void) {
     // Turn on the LCD and clear the display
-    qp_power(lcd, false);
+    // qp_power(lcd, false);
 
     // Disable power to display
     gpio_write_pin_low(LCD_ENABLE_PIN);
 }
 
-void render_lcd() {
+void render_lcd(bool force) {
     const uint8_t curr_rgb_mode = rgblight_get_mode();
     bool curr_caps = host_keyboard_led_state().caps_lock;
 
-    if(last_layer_state != layer_state) {
+    if(last_layer_state != layer_state || force) {
         last_layer_state   = layer_state;
         const char      *layer_name = current_layer_name();
         qp_rect(lcd, 80, 22, 160, 50, 6, 0, 0, true);
         qp_drawtext(lcd, (120 - qp_textwidth(my_font, layer_name)/2), 27, my_font, layer_name);
     }
 
-    if(curr_rgb_mode != last_rgb_mode) {
+    if(curr_rgb_mode != last_rgb_mode || force) {
         last_rgb_mode = curr_rgb_mode;
         const char * rgb_mode = current_rgb_mode();
 
@@ -260,7 +256,7 @@ void render_lcd() {
     }
 
     // Caps
-    if(curr_caps != last_caps) {
+    if(curr_caps != last_caps || force) {
         last_caps = curr_caps;
 
         // Rect to clear that area
@@ -282,7 +278,7 @@ void refresh_lcd(void) {
         // Turn LCD On
         init_lcd();
         render_static_text();
-        render_lcd();
+        render_lcd(true);
 
         #ifdef BACKLIGHT_ENABLE
         if (last_backlight != 255) {
@@ -328,9 +324,14 @@ void keyboard_post_init_keymap(void) {
     #ifdef LCD_ACTIVITY_TIMEOUT
     // Initialize the LCD
     lcd = qp_ili9341_make_spi_device(320, 240, LCD_CS_PIN, LCD_DC_PIN, LCD_RST_PIN, 1, 0);
+    my_font = qp_load_font_mem(font_norse20);
+    hermod_logo = qp_load_image_mem(gfx_hermod_logo);
+    left_base_layout = qp_load_image_mem(gfx_left_base_layout);
+    right_base_layout = qp_load_image_mem(gfx_right_base_layout);
+
     init_lcd();
     render_static_text();
-    render_lcd();
+    render_lcd(false);
 
     #ifdef BACKLIGHT_ENABLE
     backlight_enable();
@@ -344,7 +345,7 @@ void housekeeping_task_keymap(void) {
         check_lcd_timeout();
 
         if(!is_lcd_timeout && peripherals_on) {
-            render_lcd();
+            render_lcd(false);
             last_update = timer_read();
         }
     #endif
@@ -369,7 +370,7 @@ void suspend_wakeup_init_keymap(void) {
         // Turn LCD On
         init_lcd();
         render_static_text();
-        render_lcd();
+        render_lcd(true);
     #endif
 
     #ifdef BACKLIGHT_ENABLE

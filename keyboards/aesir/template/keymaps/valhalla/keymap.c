@@ -105,9 +105,6 @@ void check_lcd_timeout(void) {
 // static painter_image_handle_t my_image;
 
 void keyboard_post_init_keymap(void) {
-    // Let the LCD get some power...
-    wait_ms(200);
-
     // Initialize the LCD
     lcd = qp_ili9341_make_spi_device(240, 320, LCD_CS_PIN, LCD_DC_PIN, LCD_RST_PIN, 4, 0);
     qp_init(lcd, QP_ROTATION_180);  // Try different rotations
