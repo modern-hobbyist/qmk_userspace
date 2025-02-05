@@ -132,11 +132,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 // clang-format on
 
 #ifdef LCD_ACTIVITY_TIMEOUT
-static uint32_t lcd_key_timer;
-static void     refresh_lcd(void);       // refreshes the activity timer and RGB, invoke whenever any activity happens
 static void     check_lcd_timeout(void); // checks if enough time has passed for RGB to timeout
 bool            is_lcd_timeout = false;  // store if RGB has timed out or not in a boolean
-bool            peripherals_on = false;
+bool            peripherals_on = true;
 static void     render_lcd(bool force);
 static void     init_lcd(void);
 static void     power_off_lcd(void);
@@ -227,7 +225,7 @@ void render_static_text(void) {
 
 void power_off_lcd(void) {
     // Turn on the LCD and clear the display
-    // qp_power(lcd, false);
+    qp_power(lcd, false);
 
     // Disable power to display
     gpio_write_pin_low(LCD_ENABLE_PIN);
@@ -272,29 +270,10 @@ void render_lcd(bool force) {
     }
 }
 
-void refresh_lcd(void) {
-    lcd_key_timer = timer_read32(); // store time of last refresh
-    if (is_lcd_timeout) {
-        // Turn LCD  On
-        init_lcd();
-        render_static_text();
-        render_lcd(true);
-
-        #ifdef BACKLIGHT_ENABLE
-        if (last_backlight != 255) {
-            backlight_set(last_backlight);
-        }
-        last_backlight = 255;
-        #endif
-
-        is_lcd_timeout = false;
-    }
-}
-
 void check_lcd_timeout(void) {
     peripherals_on = last_input_activity_elapsed() < LCD_ACTIVITY_TIMEOUT;
 
-    if (!is_lcd_timeout && timer_elapsed32(lcd_key_timer) > LCD_ACTIVITY_TIMEOUT) // check if RGB has already timeout and if enough time has passed
+    if (!is_lcd_timeout && !peripherals_on) // check if RGB has already timeout and if enough time has passed
     {
         #ifdef BACKLIGHT_ENABLE
         if (last_backlight == 255) {
@@ -307,6 +286,11 @@ void check_lcd_timeout(void) {
         power_off_lcd();
 
         is_lcd_timeout = true;
+    } else if(is_lcd_timeout && peripherals_on) {
+        init_lcd();
+        render_static_text();
+        render_lcd(true);
+        is_lcd_timeout = false;
     }
 }
 #endif
@@ -383,11 +367,6 @@ void suspend_wakeup_init_keymap(void) {
 
 bool process_record_keymap (uint16_t keycode, keyrecord_t *record) {
     if (record->event.pressed) {
-        #ifdef LCD_ACTIVITY_TIMEOUT
-            refresh_lcd();
-
-        #endif
-
         // uprintf("Key pressed: 0x%X, Mods: 0x%X\n", keycode, get_mods());
 
         // uint8_t mods = get_mods();
