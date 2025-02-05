@@ -15,6 +15,8 @@
 #include "./graphics/hermod-logo.qgf.h"
 #include "./graphics/left-base-layout.qgf.h"
 #include "./graphics/right-base-layout.qgf.h"
+#include "./graphics/left-1-layout.qgf.h"
+#include "./graphics/right-1-layout.qgf.h"
 #define LCD_RENDER_TIMEOUT 100
 
 static painter_font_handle_t my_font;
@@ -142,6 +144,8 @@ static void     render_static_text(void);
 static painter_image_handle_t hermod_logo;
 static painter_image_handle_t left_base_layout;
 static painter_image_handle_t right_base_layout;
+static painter_image_handle_t left_1_layout;
+static painter_image_handle_t right_1_layout;
 static uint32_t last_layer_state = -1;
 uint8_t last_rgb_mode = -1;
 bool last_caps = true;
@@ -203,24 +207,6 @@ void render_static_text(void) {
         qp_drawtext(lcd, (120 - qp_textwidth(my_font, layer_title)/2), 2, my_font, layer_title);
         qp_drawtext(lcd, (240 - qp_textwidth(my_font, rgb_title) - 2), 2, my_font, rgb_title);
     }
-
-    if (is_keyboard_left()) {
-        if (left_base_layout != NULL) {
-            qp_drawimage(lcd, 0, 55, left_base_layout);
-        }
-
-        if (hermod_logo != NULL) {
-            qp_drawimage(lcd, 10, (320 - hermod_logo->height - 10), hermod_logo);
-        }
-    } else {
-        if (left_base_layout != NULL) {
-            qp_drawimage(lcd, 0, 55, right_base_layout);
-        }
-
-        if (hermod_logo != NULL) {
-            qp_drawimage(lcd, (240 - hermod_logo->width -10), (320 - hermod_logo->height - 10), hermod_logo);
-        }
-    }
 }
 
 void power_off_lcd(void) {
@@ -240,6 +226,36 @@ void render_lcd(bool force) {
         const char      *layer_name = current_layer_name();
         qp_rect(lcd, 80, 22, 160, 50, 6, 0, 0, true);
         qp_drawtext(lcd, (120 - qp_textwidth(my_font, layer_name)/2), 27, my_font, layer_name);
+
+        if (is_keyboard_left()) {
+            if(get_highest_layer(layer_state) == _BASE) {
+                if (left_base_layout != NULL) {
+                    qp_drawimage(lcd, 0, 55, left_base_layout);
+                }
+            } else if (get_highest_layer(layer_state) ==  _FN0) {
+                if (left_1_layout != NULL) {
+                    qp_drawimage(lcd, 0, 55, left_1_layout);
+                }
+            }
+
+            if (hermod_logo != NULL) {
+                qp_drawimage(lcd, 10, (320 - hermod_logo->height - 10), hermod_logo);
+            }
+        } else {
+            if(get_highest_layer(layer_state) == _BASE) {
+                if (right_base_layout != NULL) {
+                    qp_drawimage(lcd, 0, 55, right_base_layout);
+                }
+            } else if (get_highest_layer(layer_state) ==  _FN0) {
+                if (right_1_layout != NULL) {
+                    qp_drawimage(lcd, 0, 55, right_1_layout);
+                }
+            }
+
+            if (hermod_logo != NULL) {
+                qp_drawimage(lcd, (240 - hermod_logo->width -10), (320 - hermod_logo->height - 10), hermod_logo);
+            }
+        }
     }
 
     if(curr_rgb_mode != last_rgb_mode || force) {
@@ -312,6 +328,8 @@ void keyboard_post_init_keymap(void) {
     hermod_logo = qp_load_image_mem(gfx_hermod_logo);
     left_base_layout = qp_load_image_mem(gfx_left_base_layout);
     right_base_layout = qp_load_image_mem(gfx_right_base_layout);
+    left_1_layout = qp_load_image_mem(gfx_left_1_layout);
+    right_1_layout = qp_load_image_mem(gfx_right_1_layout);
 
     init_lcd();
     render_static_text();
