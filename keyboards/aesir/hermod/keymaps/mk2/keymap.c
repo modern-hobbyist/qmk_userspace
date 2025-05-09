@@ -5,9 +5,8 @@
 #include "quantum.h"
 #include "csteamengine.h"
 #include "lib/layer_status/layer_status.h"
-
+#include "transactions.h"
 #include "print.h"
-
 
 #ifdef LCD_ACTIVITY_TIMEOUT
 #include <qp.h>
@@ -15,8 +14,8 @@
 #include "./graphics/hermod-logo.qgf.h"
 #include "./graphics/left-base-layout.qgf.h"
 #include "./graphics/right-base-layout.qgf.h"
-// #include "./graphics/left-1-layout.qgf.h"
-// #include "./graphics/right-1-layout.qgf.h"
+#include "./graphics/left-1-layout.qgf.h"
+#include "./graphics/right-1-layout.qgf.h"
 #define LCD_RENDER_TIMEOUT 100
 
 static painter_font_handle_t my_font;
@@ -66,7 +65,8 @@ enum {
     TD_RALT_PAR,
     TD_RCTL_PAR,
     TD_ESC_CAPS,
-    TD_GRV_LAYER
+    TD_GRV_LAYER,
+    TD_REFACTOR
 };
 
 typedef enum {
@@ -91,44 +91,24 @@ typedef struct {
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [_BASE] = LAYOUT(
                 // Left Half Numpad                           Left Half                                                                                                                                                             Right Half                                                                                                  Right Half Numpad
-                KC_NUM, KC_PSLS, KC_PAST,   KC_PMNS,          REFACTOR,         TD(TD_ESC_CAPS),       SCREEN_RECORDING_1, SCREEN_SHOT_TO_CLIPBOARD,   SCREEN_SHOT_AREA,    SCREEN_SHOT_SCREEN,     MAC_EMOJIS,                     TD(TD_PW_ONE),      TD(TD_PW_TWO),  TD(TD_PW_THREE),    KC_NO,      KC_NO,      KC_DEL,     KC_BSPC,        KC_NUM,   KC_PSLS, KC_PAST,   KC_PMNS,
+                KC_NUM, KC_PSLS, KC_PAST,   KC_PMNS,          TD(TD_REFACTOR),  TD(TD_ESC_CAPS),       SCREEN_RECORDING_1, SCREEN_SHOT_TO_CLIPBOARD,   SCREEN_SHOT_AREA,    SCREEN_SHOT_SCREEN,     MAC_EMOJIS,                     TD(TD_PW_ONE),      TD(TD_PW_TWO),  TD(TD_PW_THREE),    KC_NO,      KC_NO,      KC_DEL,     KC_BSPC,        KC_NUM,   KC_PSLS, KC_PAST,   KC_PMNS,
                 KC_P7,  KC_P8,   KC_P9,     KC_PPLS,          EXTRACT_METHOD,   LT(_FN0, KC_GRV),      KC_1,               KC_2,                       KC_3,                KC_4,                   KC_5,                           KC_6,               KC_7,           KC_8,               KC_9,       KC_0,       KC_MINS,    KC_EQL,         KC_P7,    KC_P8,   KC_P9,     KC_PPLS,
                 KC_P4,  KC_P5,   KC_P6,     KC_PEQL,          TD(TD_COPY_FILE), KC_TAB,                KC_Q,               KC_W,                       KC_E,                KC_R,                   KC_T,                           KC_Y,               KC_U,           KC_I,               KC_O,       KC_P,       KC_LBRC,    KC_RBRC,        KC_P4,    KC_P5,   KC_P6,     KC_PEQL,
                 KC_P1,  KC_P2,   KC_P3,     KC_NO,            TD(TD_OBSIDIAN),  KC_LSFT,               KC_A,               KC_S,                       KC_D,                KC_F,                   KC_G,                           KC_H,               KC_J,           KC_K,               KC_L,       KC_SCLN,    KC_QUOT,    KC_ENT,         KC_P1,    KC_P2,   KC_P3,     KC_NO,
-                KC_NO,  KC_P0,   KC_PDOT,   KC_PENT,          TD(TD_TICK_TICK), SELECT_WORD,           KC_Z,               KC_X,                       KC_C,                KC_V,                   KC_B,                           KC_N,               KC_M,           KC_COMM,            KC_DOT,     KC_SLSH,    KC_BSLS,    KC_RSFT,        KC_PENT,  KC_P0,   KC_PDOT,   KC_PENT,
+                KC_NO,  KC_P0,   KC_PDOT,   KC_PENT,          TD(TD_TICK_TICK), LSFT(KC_LALT),         KC_Z,               KC_X,                       KC_C,                KC_V,                   KC_B,                           KC_N,               KC_M,           KC_COMM,            KC_DOT,     KC_SLSH,    KC_BSLS,    KC_RSFT,        KC_PENT,  KC_P0,   KC_PDOT,   KC_PENT,
                                                                                                                                                                             TD(TD_LALT_PAR),        TD(TD_LCTL_PAR),                TD(TD_RALT_PAR),    TD(TD_RCTL_PAR),                    KC_UP,
-                                                                                                                                                                            LM(_FN0, MOD_LGUI),     KC_SPACE,                       LM(_FN0, MOD_RGUI), KC_SPACE,       KC_LEFT,            KC_DOWN,    KC_RIGHT
+                                                                                                                                                                            KC_LGUI,                LT(_FN0, KC_SPACE),             KC_RGUI,            KC_SPACE,       KC_LEFT,            KC_DOWN,    KC_RIGHT
             ),
     [_FN0] = LAYOUT(
-                // Left Half Numpad                           Left Half                                                                                     Right Half                                                                                          Right Half Numpad
-                KC_NUM, KC_PSLS, KC_PAST,   KC_PMNS,          RGB_TOG,      KC_ESC,     RGB_VAD,    RGB_VAI,  KC_NO,    KC_NO,      KC_NO,                  KC_MPRV,    KC_MPLY,    KC_MNXT,        KC_NO,      KC_NO,      KC_DEL,     G(KC_BSPC),             KC_NUM,   KC_PSLS, KC_PAST,   KC_PMNS,
-                KC_P7,  KC_P8,   KC_P9,     KC_PPLS,          RGB_MOD,      KC_GRV,     KC_1,       KC_2,     KC_3,     KC_4,       KC_5,                   KC_6,       KC_7,       KC_8,           KC_9,       KC_0,       KC_MINS,    KC_EQL,                 KC_P7,    KC_P8,   KC_P9,     KC_PPLS,
-                KC_P4,  KC_P5,   KC_P6,     KC_PEQL,          RGB_RMOD,     KC_TAB,     KC_Q,       KC_W,     KC_E,     KC_R,       KC_T,                   KC_Y,       KC_U,       KC_I,           KC_O,       KC_P,       KC_LBRC,    KC_RBRC,                KC_P4,    KC_P5,   KC_P6,     KC_PEQL,
-                KC_P1,  KC_P2,   KC_P3,     KC_NO,            RGB_HUI,      KC_LSFT,    KC_A,       KC_S,     KC_D,     KC_F,       KC_G,                   KC_H,       KC_J,       KC_K,           KC_L,       KC_SCLN,    KC_QUOT,    KC_ENT,                 KC_P1,    KC_P2,   KC_P3,     KC_NO,
-                KC_NO,  KC_P0,   KC_PDOT,   KC_PENT,          RGB_HUD,      KC_CAPS,    KC_Z,       KC_X,     KC_C,     KC_V,       KC_B,                   KC_N,       KC_M,       KC_COMM,        KC_DOT,     KC_SLSH,    KC_MINS,    KC_RSFT,                KC_PENT,  KC_P0,   KC_PDOT,   KC_PENT,
-                                                                                                                        KC_LALT,    KC_LCTL,                KC_VOLD,    KC_VOLU,                    KC_UP,
-                                                                                                                        KC_LGUI,    KC_SPACE,               KC_RGUI,    KC_SPACE,   LAG(KC_LEFT),   KC_DOWN,    LAG(KC_RIGHT)
-            ),
-    [_FN1] = LAYOUT(
-                // Left Half Numpad                           Left Half                                                                                 Right Half                                                                                          Right Half Numpad
-                KC_NUM, KC_PSLS, KC_PAST,   KC_PMNS,          KC_NO,  KC_ESC,     KC_NO,    KC_NO,  KC_NO,  KC_NO,              KC_NO,                  KC_NO,              KC_NO,      KC_NO,      KC_NO,      KC_NO,      KC_DEL,     KC_BSPC,            KC_NUM,   KC_PSLS, KC_PAST,   KC_PMNS,
-                KC_P7,  KC_P8,   KC_P9,     KC_PPLS,          KC_NO,  KC_GRV,     KC_1,     KC_2,   KC_3,   KC_4,               KC_5,                   KC_6,               KC_7,       KC_8,       KC_9,       KC_0,       KC_MINS,    KC_EQL,             KC_P7,    KC_P8,   KC_P9,     KC_PPLS,
-                KC_P4,  KC_P5,   KC_P6,     KC_PEQL,          KC_NO,  KC_TAB,     KC_Q,     KC_W,   KC_E,   KC_R,               KC_T,                   KC_Y,               KC_U,       KC_I,       KC_O,       KC_P,       KC_LBRC,    KC_RBRC,            KC_P4,    KC_P5,   KC_P6,     KC_PEQL,
-                KC_P1,  KC_P2,   KC_P3,     KC_NO,            KC_NO,  KC_LSFT,    KC_A,     KC_S,   KC_D,   KC_F,               KC_G,                   KC_H,               KC_J,       KC_K,       KC_L,       KC_SCLN,    KC_QUOT,    KC_ENT,             KC_P1,    KC_P2,   KC_P3,     KC_NO,
-                KC_NO,  KC_P0,   KC_PDOT,   KC_PENT,          KC_NO,  KC_CAPS,    KC_Z,     KC_X,   KC_C,   KC_V,               KC_B,                   KC_N,               KC_M,       KC_COMM,    KC_DOT,     KC_SLSH,    KC_MINS,    KC_RSFT,            KC_PENT,  KC_P0,   KC_PDOT,   KC_PENT,
-                                                                                                            KC_LALT,            KC_LCTL,                KC_LALT,            KC_LCTL,                KC_UP,
-                                                                                                            KC_LGUI,            KC_SPACE,               KC_RGUI,            KC_SPACE,   KC_LEFT,    KC_DOWN,    KC_RIGHT
-            ),
-    [_FN2] = LAYOUT(
-                // Left Half Numpad                           Left Half                                                                                 Right Half                                                                                          Right Half Numpad
-                KC_NUM, KC_PSLS, KC_PAST,   KC_PMNS,          KC_NO,  KC_ESC,     KC_NO,    KC_NO,  KC_NO,  KC_NO,              KC_NO,                  KC_NO,              KC_NO,      KC_NO,      KC_NO,      KC_NO,      KC_DEL,     KC_BSPC,            KC_NUM,   KC_PSLS, KC_PAST,   KC_PMNS,
-                KC_P7,  KC_P8,   KC_P9,     KC_PPLS,          KC_NO,  KC_GRV,     KC_1,     KC_2,   KC_3,   KC_4,               KC_5,                   KC_6,               KC_7,       KC_8,       KC_9,       KC_0,       KC_MINS,    KC_EQL,             KC_P7,    KC_P8,   KC_P9,     KC_PPLS,
-                KC_P4,  KC_P5,   KC_P6,     KC_PEQL,          KC_NO,  KC_TAB,     KC_Q,     KC_W,   KC_E,   KC_R,               KC_T,                   KC_Y,               KC_U,       KC_I,       KC_O,       KC_P,       KC_LBRC,    KC_RBRC,            KC_P4,    KC_P5,   KC_P6,     KC_PEQL,
-                KC_P1,  KC_P2,   KC_P3,     KC_NO,            KC_NO,  KC_LSFT,    KC_A,     KC_S,   KC_D,   KC_F,               KC_G,                   KC_H,               KC_J,       KC_K,       KC_L,       KC_SCLN,    KC_QUOT,    KC_NO,              KC_P1,    KC_P2,   KC_P3,     KC_NO,
-                KC_NO,  KC_P0,   KC_PDOT,   KC_PENT,          KC_NO,  KC_CAPS,    KC_Z,     KC_X,   KC_C,   KC_V,               KC_B,                   KC_N,               KC_M,       KC_COMM,    KC_DOT,     KC_SLSH,    KC_MINS,    KC_RSFT,            KC_PENT,  KC_P0,   KC_PDOT,   KC_PENT,
-                                                                                                            KC_LALT,            KC_LCTL,                KC_LALT,            KC_LCTL,                KC_UP,
-                                                                                                            KC_LGUI,            KC_SPACE,               KC_RGUI,            KC_SPACE,   KC_LEFT,    KC_DOWN,    KC_RIGHT
-            ),
+                // Left Half Numpad                         Left Half                                                                                               Right Half                                                                                      Right Half Numpad
+                KC_NUM, KC_PSLS, KC_PAST,   KC_PMNS,        _______,   RGB_VAD,    RGB_VAI,    RGB_HUI,    RGB_RMOD,        RGB_MOD,            RGB_TOG,            KC_MPRV,    KC_MPLY,        KC_MNXT,        KC_NO,      KC_NO,          KC_DEL,    G(KC_BSPC),      KC_NUM,   KC_PSLS, KC_PAST,   KC_PMNS,
+                KC_P7,  KC_P8,   KC_P9,     KC_PPLS,        _______,   _______,    _______,    _______,    _______,         _______,            _______,            _______,    _______,        _______,        _______,    _______,        _______,   _______,         KC_P7,    KC_P8,   KC_P9,     KC_PPLS,
+                KC_P4,  KC_P5,   KC_P6,     KC_PEQL,        _______,   _______,    _______,    _______,    _______,         _______,            _______,            _______,    _______,        _______,        _______,    _______,        _______,   _______,         KC_P4,    KC_P5,   KC_P6,     KC_PEQL,
+                KC_P1,  KC_P2,   KC_P3,     KC_NO,          _______,   _______,    _______,    _______,    LSFT(KC_LBRC),   LSFT(KC_9),         KC_LBRC,            KC_RBRC,    RSFT(KC_0),     RSFT(KC_RBRC),  _______,    _______,        _______,   _______,         KC_P1,    KC_P2,   KC_P3,     KC_NO,
+                KC_NO,  KC_P0,   KC_PDOT,   KC_PENT,        _______,   _______,    _______,    _______,    LGUI(KC_Z),      LSFT(LGUI(KC_Z)),   _______,            _______,    _______,        _______,        _______,    _______,        _______,   _______,         KC_PENT,  KC_P0,   KC_PDOT,   KC_PENT,
+                                                                                                                            LSFT(LGUI(KC_T)),   _______,            KC_MPRV,    KC_MNXT,                        KC_VOLU,
+                                                                                                                            KC_LGUI,            KC_SPACE,           KC_HOME,    KC_END,         LAG(KC_LEFT),   KC_VOLD,    LAG(KC_RIGHT)
+            )
 };
 
 // clang-format on
@@ -144,11 +124,19 @@ static void     render_static_text(void);
 static painter_image_handle_t hermod_logo;
 static painter_image_handle_t left_base_layout;
 static painter_image_handle_t right_base_layout;
-// static painter_image_handle_t left_1_layout;
-// static painter_image_handle_t right_1_layout;
-// static uint32_t last_layer_state = -1;
+static painter_image_handle_t left_1_layout;
+static painter_image_handle_t right_1_layout;
+static uint32_t last_layer_state = -1;
 uint8_t last_rgb_mode = -1;
 bool last_caps = true;
+static bool is_held = false;
+static bool show_alt_layer = false;
+static uint16_t hold_timer;
+
+void sync_bool_callback(uint8_t in_buflen, const void* in_data, uint8_t out_buflen, void* out_data) {
+    memcpy(&show_alt_layer, in_data, sizeof(show_alt_layer));
+    render_static_text();
+}
 
 const char *current_rgb_mode(void) {
     switch(rgblight_get_mode()) {
@@ -166,10 +154,6 @@ const char *current_layer_name(void) {
             return "Base";
         case _FN0:
             return "Layer 1";
-        case _FN1:
-            return "Layer 2";
-        case _FN2:
-            return "Layer 3";
     }
     return "unknown";
 }
@@ -209,29 +193,29 @@ void render_static_text(void) {
     }
 
     if (is_keyboard_left()) {
-        if (left_base_layout != NULL) {
-            qp_drawimage(lcd, 0, 55, left_base_layout);
+        if(show_alt_layer) {
+            if (left_1_layout != NULL) {
+                qp_drawimage(lcd, 0, 55, left_1_layout);
+            }
+        } else {
+            if (left_base_layout != NULL) {
+                qp_drawimage(lcd, 0, 55, left_base_layout);
+            }
         }
-        // if(get_highest_layer(layer_state) == _BASE) {
-        // } else if (get_highest_layer(layer_state) ==  _FN0) {
-        //     if (left_1_layout != NULL) {
-        //         qp_drawimage(lcd, 0, 55, left_1_layout);
-        //     }
-        // }
 
         if (hermod_logo != NULL) {
             qp_drawimage(lcd, 10, (320 - hermod_logo->height - 10), hermod_logo);
         }
     } else {
-        if (right_base_layout != NULL) {
-            qp_drawimage(lcd, 0, 55, right_base_layout);
+        if(show_alt_layer) {
+            if (right_1_layout != NULL) {
+                qp_drawimage(lcd, 0, 55, right_1_layout);
+            }
+        } else {
+            if (right_base_layout != NULL) {
+                qp_drawimage(lcd, 0, 55, right_base_layout);
+            }
         }
-        // if(get_highest_layer(layer_state) == _BASE) {
-        // } else if (get_highest_layer(layer_state) ==  _FN0) {
-        //     if (right_1_layout != NULL) {
-        //         qp_drawimage(lcd, 0, 55, right_1_layout);
-        //     }
-        // }
 
         if (hermod_logo != NULL) {
             qp_drawimage(lcd, (240 - hermod_logo->width -10), (320 - hermod_logo->height - 10), hermod_logo);
@@ -251,12 +235,12 @@ void render_lcd(bool force) {
     const uint8_t curr_rgb_mode = rgblight_get_mode();
     bool curr_caps = host_keyboard_led_state().caps_lock;
 
-    // if(last_layer_state != layer_state || force) {
-    //     last_layer_state   = layer_state;
-    //     const char      *layer_name = current_layer_name();
-    //     qp_rect(lcd, 80, 22, 160, 50, 6, 0, 0, true);
-    //     qp_drawtext(lcd, (120 - qp_textwidth(my_font, layer_name)/2), 27, my_font, layer_name);
-    // }
+    if(last_layer_state != layer_state || force) {
+        last_layer_state   = layer_state;
+        const char      *layer_name = current_layer_name();
+        qp_rect(lcd, 80, 22, 160, 50, 6, 0, 0, true);
+        qp_drawtext(lcd, (120 - qp_textwidth(my_font, layer_name)/2), 27, my_font, layer_name);
+    }
 
     if(curr_rgb_mode != last_rgb_mode || force) {
         last_rgb_mode = curr_rgb_mode;
@@ -322,14 +306,17 @@ void keyboard_pre_init_keymap(void) {
 
 void keyboard_post_init_keymap(void) {
     #ifdef LCD_ACTIVITY_TIMEOUT
+    // Init keyboard sync
+    transaction_register_rpc(KEYBOARD_SYNC_A, sync_bool_callback);
+
     // Initialize the LCD
     lcd = qp_ili9341_make_spi_device(320, 240, LCD_CS_PIN, LCD_DC_PIN, LCD_RST_PIN, 1, 0);
     my_font = qp_load_font_mem(font_norse20);
     hermod_logo = qp_load_image_mem(gfx_hermod_logo);
     left_base_layout = qp_load_image_mem(gfx_left_base_layout);
     right_base_layout = qp_load_image_mem(gfx_right_base_layout);
-    // left_1_layout = qp_load_image_mem(gfx_left_1_layout);
-    // right_1_layout = qp_load_image_mem(gfx_right_1_layout);
+    left_1_layout = qp_load_image_mem(gfx_left_1_layout);
+    right_1_layout = qp_load_image_mem(gfx_right_1_layout);
 
     init_lcd();
     render_static_text();
@@ -349,6 +336,29 @@ void housekeeping_task_keymap(void) {
         if(!is_lcd_timeout && peripherals_on) {
             render_lcd(false);
             last_update = timer_read();
+        }
+
+        if(is_keyboard_master()){
+            if (is_held) {
+                if (timer_elapsed(hold_timer) > 1000) {
+                    if (!show_alt_layer) {
+                        show_alt_layer = true;
+                        render_static_text();
+                    }
+                }
+            } else {
+                if (show_alt_layer) {
+                    show_alt_layer = false;
+                    render_static_text();
+                }
+            }
+        }
+
+        static bool last_sent_flag = false;
+        if (is_keyboard_master() && show_alt_layer != last_sent_flag) {
+            last_sent_flag = show_alt_layer;
+            dprintf("SENDING");
+            transaction_rpc_send(KEYBOARD_SYNC_A, sizeof(show_alt_layer), &show_alt_layer);
         }
     #endif
 }
@@ -384,63 +394,8 @@ void suspend_wakeup_init_keymap(void) {
 }
 
 bool process_record_keymap (uint16_t keycode, keyrecord_t *record) {
-    if (record->event.pressed) {
-        // uprintf("Key pressed: 0x%X, Mods: 0x%X\n", keycode, get_mods());
 
-        // uint8_t mods = get_mods();
-
-        // // Remove the GUI modifier before handling the keycode
-        // set_mods(mods & ~MOD_MASK_GUI);
-        // uprintf("Mods after: 0x%X", get_mods());
-
-        // uprintf("Keycode: 0x%X\n", keycode);
-        // uprintf("KC_MPLY: 0x%X\n", KC_MPLY);
-        // // Checking only the keycodes we want to trigger regardless of the mods
-        // switch (keycode) {
-        //     case CS_MPLY:
-        //         if (record->event.pressed) {
-        //             tap_code(KC_MPLY);
-        //         } else {
-        //         }
-        //         break;
-        //     case CS_MNXT:
-
-        //         if (record->event.pressed) {
-        //             SEND_STRING(SS_TAP(X_MNXT));
-        //         } else {
-        //         }
-        //         break;
-        //     case CS_MPRV:
-
-        //         if (record->event.pressed) {
-        //             SEND_STRING(SS_TAP(X_MPRV));
-        //         } else {
-        //         }
-        //         break;
-        //     case CS_UP:
-
-        //         if (record->event.pressed) {
-        //             SEND_STRING(SS_TAP(X_VOLU));
-        //         } else {
-        //         }
-        //         break;
-        //     case CS_DOWN:
-
-        //         if (record->event.pressed) {
-        //             SEND_STRING(SS_TAP(X_VOLD));
-        //         } else {
-        //         }
-        //         break;
-        // }
-
-        // // Restore the original mods after handling the keycode
-        // set_mods(mods);
-        // return false;
-    }
-
-
-
-    return true;
+      return true;
 }
 
 /// ================ TAP DANCE CONFIG =================
@@ -811,13 +766,30 @@ void r_ctl_par_finished(tap_dance_state_t *state, void *user_data) {
     }
 }
 
+// Functions that control what our tap dance key does
+void refactor_finished(tap_dance_state_t *state, void *user_data) {
+    ql_tap_state.state = cur_dance(state);
+    switch (ql_tap_state.state) {
+        case TD_SINGLE_TAP:
+            SEND_STRING(SS_LSFT(SS_TAP(X_F6)));
+            break;
+        case TD_SINGLE_HOLD:
+            if (!is_held) {
+                is_held = true;
+                hold_timer = timer_read(); // Record the time the key was pressed
+            }
+            break;
+        case TD_DOUBLE_TAP:
+        default:
+            break;
+    }
+}
+
 void ql_reset(tap_dance_state_t *state, void *user_data) {
     // If the key was held down and now is released then switch off the layer
     if (ql_tap_state.state == TD_SINGLE_HOLD) {
         layer_on(_BASE);
         layer_off(_FN0);
-        layer_off(_FN1);
-        layer_off(_FN2);
         unregister_code(KC_LSFT);
         unregister_code(KC_RSFT);
         unregister_code(KC_LGUI);
@@ -826,6 +798,7 @@ void ql_reset(tap_dance_state_t *state, void *user_data) {
         unregister_code(KC_RCTL);
         unregister_code(KC_LALT);
         unregister_code(KC_RALT);
+        is_held = false;
     }
     ql_tap_state.state = TD_NONE;
 }
@@ -855,6 +828,7 @@ tap_dance_action_t tap_dance_actions[] = {
     [TD_LCTL_PAR] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, l_ctl_par_finished, ql_reset),
     [TD_RALT_PAR] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, r_alt_par_finished, ql_reset),
     [TD_RCTL_PAR] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, r_ctl_par_finished, ql_reset),
+    [TD_REFACTOR] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, refactor_finished, ql_reset),
     // TODO add more tap dance actions here.
 };
 // clang-format on
