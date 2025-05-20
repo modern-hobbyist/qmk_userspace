@@ -8,7 +8,6 @@
 #include "lib/layer_status/layer_status.h"
 // #include "lib/bongocat/bongocat.h"
 #include <qp.h>
-#include "graphics/layout-1-left.qgf.h"
 
 painter_device_t lcd;
 static uint8_t last_backlight = 255;
