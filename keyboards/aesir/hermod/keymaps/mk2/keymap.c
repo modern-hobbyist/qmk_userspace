@@ -131,7 +131,6 @@ uint8_t last_rgb_mode = -1;
 bool last_caps = true;
 static bool is_held = false;
 static bool show_alt_layer = false;
-static uint16_t hold_timer;
 
 void sync_bool_callback(uint8_t in_buflen, const void* in_data, uint8_t out_buflen, void* out_data) {
     memcpy(&show_alt_layer, in_data, sizeof(show_alt_layer));
@@ -162,9 +161,6 @@ void init_lcd(void) {
     qp_init(lcd, QP_ROTATION_0);
 
     gpio_write_pin_high(LCD_ENABLE_PIN);
-
-    // Let the LCD get some power...
-    wait_ms(200);
 
     // Turn on the LCD and clear the display
     qp_rect(lcd, 0, 0, 240, 320, 6, 0, 0, true);
@@ -283,10 +279,12 @@ void check_lcd_timeout(void) {
         backlight_set(0);
         #endif
 
+        dprintf("check_lcd_timeout poweroff\n");
         power_off_lcd();
 
         is_lcd_timeout = true;
     } else if(is_lcd_timeout && peripherals_on) {
+        dprintf("check_lcd_timeout poweron\n");
         init_lcd();
         render_static_text();
         render_lcd(true);
@@ -340,11 +338,9 @@ void housekeeping_task_keymap(void) {
 
         if(is_keyboard_master()){
             if (is_held) {
-                if (timer_elapsed(hold_timer) > 1000) {
-                    if (!show_alt_layer) {
-                        show_alt_layer = true;
-                        render_static_text();
-                    }
+                if (!show_alt_layer) {
+                    show_alt_layer = true;
+                    render_static_text();
                 }
             } else {
                 if (show_alt_layer) {
@@ -364,6 +360,7 @@ void housekeeping_task_keymap(void) {
 }
 
 void suspend_power_down_keymap(void) {
+    dprintf("POWERINGOFF");
     #ifdef BACKLIGHT_ENABLE
     if (last_backlight == 255) {
         last_backlight = get_backlight_level();
@@ -774,10 +771,7 @@ void refactor_finished(tap_dance_state_t *state, void *user_data) {
             SEND_STRING(SS_LSFT(SS_TAP(X_F6)));
             break;
         case TD_SINGLE_HOLD:
-            if (!is_held) {
-                is_held = true;
-                hold_timer = timer_read(); // Record the time the key was pressed
-            }
+            is_held = true;
             break;
         case TD_DOUBLE_TAP:
         default:
