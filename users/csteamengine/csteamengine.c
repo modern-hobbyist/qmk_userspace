@@ -171,7 +171,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             break;
         case TICK_TICK_TASK:
             if (record->event.pressed) {
-                SEND_STRING(SS_LOPT(SS_LSFT(SS_TAP(X_A))));
+                SEND_STRING(SS_LOPT(SS_LSFT(SS_LGUI(SS_TAP(X_A)))));
             } else {
             }
             break;
