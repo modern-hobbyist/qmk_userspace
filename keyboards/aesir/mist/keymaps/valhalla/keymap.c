@@ -12,7 +12,9 @@
 #include <qp.h>
 #include "./fonts/norse20.qff.h"
 #include "./graphics/hermod-logo.qgf.h"
-// #include "./graphics/left-base-layout.qgf.h"
+// #include "./graphics/mist/layer-1.qgf.h"
+#include "./graphics/mist/layer-1-full.qgf.h"
+#include "./graphics/mist/layer-2-full.qgf.h"
 // #include "./graphics/left-1-layout.qgf.h"
 #define LCD_RENDER_TIMEOUT 100
 
@@ -88,7 +90,7 @@ typedef struct {
 // clang-format off
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [_BASE] = LAYOUT(
-        KC_ESC,     TD(TD_REFACTOR),   SCREEN_RECORDING_1, SCREEN_SHOT_TO_CLIPBOARD,   SCREEN_SHOT_AREA,    SCREEN_SHOT_SCREEN, KC_NO,   KC_NO,   KC_NO,   KC_NO,   TD(TD_PW_THREE), TD(TD_PW_TWO),  TD(TD_PW_ONE), KC_DEL,
+        KC_ESC,     SCREEN_RECORDING_1,   SCREEN_SHOT_TO_CLIPBOARD, SCREEN_SHOT_AREA,   SCREEN_SHOT_SCREEN,    KC_NO, KC_NO,   KC_NO,   KC_NO,   KC_NO,   TD(TD_PW_THREE), TD(TD_PW_TWO),  TD(TD_PW_ONE), KC_DEL,
         KC_GRV,   KC_1,    KC_2,    KC_3,    KC_4,    KC_5,     KC_6,    KC_7,    KC_8,      KC_9,    KC_0,    KC_MINS, KC_EQL,                 KC_BSPC,
         KC_TAB,   KC_Q,     KC_W,   KC_E,    KC_R,    KC_T,     KC_Y,    KC_U,    KC_I,      KC_O,    KC_P,    KC_LBRC, KC_RBRC,                KC_BSLS,                        KC_NUM,     KC_PSLS, KC_PAST, KC_PMNS,
         KC_CAPS,    KC_A,     KC_S,   KC_D,    KC_F,    KC_G,     KC_H,    KC_J,    KC_K,      KC_L,    KC_SCLN, KC_QUOT,                       KC_ENT,                         KC_P7,      KC_P8,   KC_P9,
@@ -117,8 +119,12 @@ static void     render_lcd(bool force);
 static void     init_lcd(void);
 static void     power_off_lcd(void);
 static void     render_static_text(void);
+static void     render_rgb_text(void);
+static void     render_caps_text(void);
 static painter_image_handle_t hermod_logo;
-// static painter_image_handle_t left_base_layout;
+// static painter_image_handle_t layer_1;
+static painter_image_handle_t layer_1_full;
+static painter_image_handle_t layer_2_full;
 // static painter_image_handle_t left_1_layout;
 static uint32_t last_layer_state = -1;
 uint8_t last_rgb_mode = -1;
@@ -199,6 +205,14 @@ void init_lcd(void) {
 }
 
 void render_static_text(void) {
+    // if(layer_1 != NULL) {
+    //     qp_drawimage(lcd, 0, 20, layer_1);
+    // }
+
+    if (hermod_logo != NULL) {
+        qp_drawimage(lcd, 10, (240 - hermod_logo->height - 10), hermod_logo);
+    }
+
     if (my_font != NULL) {
         static const char *title = "Project Aesir | Mist";
         static const char *caps_title = "Caps";
@@ -212,18 +226,37 @@ void render_static_text(void) {
         qp_drawtext(lcd, (160 - qp_textwidth(my_font, layer_title)/2), 2, my_font, layer_title);
         qp_drawtext(lcd, (320 - qp_textwidth(my_font, rgb_title) - 2), 2, my_font, rgb_title);
     }
-    // if(show_alt_layer) {
-    //     if (left_1_layout != NULL) {
-    //         qp_drawimage(lcd, 0, 55, left_1_layout);
-    //     }
-    // } else {
-    //     if (left_base_layout != NULL) {
-    //         qp_drawimage(lcd, 0, 55, left_base_layout);
-    //     }
-    // }
+}
 
-    if (hermod_logo != NULL) {
-        qp_drawimage(lcd, 10, (240 - hermod_logo->height - 10), hermod_logo);
+void render_rgb_text(void) {
+    const uint8_t curr_rgb_mode = rgblight_get_mode();
+
+    render_static_text();
+    last_rgb_mode = curr_rgb_mode;
+    const char * rgb_mode = current_rgb_mode();
+
+    // Rect to clear that area
+    qp_rect(lcd, 200, 22, 320, 50, 6, 0, 0, true);
+
+    // RGB Profile
+    qp_drawtext(lcd, (320 - qp_textwidth(my_font, rgb_mode) - 2), 27, my_font, rgb_mode);
+}
+
+void render_caps_text(void) {
+    bool curr_caps = host_keyboard_led_state().caps_lock;
+
+    render_static_text();
+    last_caps = curr_caps;
+
+    // Rect to clear that area
+    qp_rect(lcd, 0, 22, 100, 50, 6, 0, 0, true);
+
+    if (curr_caps) {
+        // Caps Lock is on
+        qp_drawtext(lcd, 2, 27, my_font, "On");
+    } else {
+        // Caps Lock is off
+        qp_drawtext(lcd, 2, 27, my_font, "Off");
     }
 }
 
@@ -246,35 +279,31 @@ void render_lcd(bool force) {
     if(last_layer_state != layer_state || force) {
         last_layer_state   = layer_state;
         const char      *layer_name = current_layer_name();
+
+        if(get_highest_layer(layer_state) == _BASE) {
+            if(layer_1_full != NULL) {
+                qp_drawimage(lcd, 0, 5, layer_1_full);
+            }
+        } else if (get_highest_layer(layer_state) == _FN0){
+            if(layer_2_full != NULL) {
+                qp_drawimage(lcd, 0, 5, layer_2_full);
+            }
+        }
+
+        render_static_text();
+        render_caps_text();
+        render_rgb_text();
         qp_rect(lcd, 100, 22, 200, 50, 6, 0, 0, true);
         qp_drawtext(lcd, (160 - qp_textwidth(my_font, layer_name)/2), 27, my_font, layer_name);
     }
 
     if(curr_rgb_mode != last_rgb_mode || force) {
-        last_rgb_mode = curr_rgb_mode;
-        const char * rgb_mode = current_rgb_mode();
-
-        // Rect to clear that area
-        qp_rect(lcd, 200, 22, 320, 50, 6, 0, 0, true);
-
-        // RGB Profile
-        qp_drawtext(lcd, (320 - qp_textwidth(my_font, rgb_mode) - 2), 27, my_font, rgb_mode);
+        render_rgb_text();
     }
 
     // Caps
     if(curr_caps != last_caps || force) {
-        last_caps = curr_caps;
-
-        // Rect to clear that area
-        qp_rect(lcd, 0, 22, 100, 50, 6, 0, 0, true);
-
-        if (curr_caps) {
-            // Caps Lock is on
-            qp_drawtext(lcd, 2, 27, my_font, "On");
-        } else {
-            // Caps Lock is off
-            qp_drawtext(lcd, 2, 27, my_font, "Off");
-        }
+        render_caps_text();
     }
 }
 
@@ -318,7 +347,9 @@ void keyboard_post_init_keymap(void) {
     lcd = qp_ili9341_make_spi_device(320, 240, LCD_CS_PIN, LCD_DC_PIN, LCD_RST_PIN, 8, 0);
     my_font = qp_load_font_mem(font_norse20);
     hermod_logo = qp_load_image_mem(gfx_hermod_logo);
-    // left_base_layout = qp_load_image_mem(gfx_left_base_layout);
+    // layer_1 = qp_load_image_mem(gfx_layer_1);
+    layer_1_full = qp_load_image_mem(gfx_layer_1_full);
+    layer_2_full = qp_load_image_mem(gfx_layer_2_full);
     // left_1_layout = qp_load_image_mem(gfx_left_1_layout);
 
     init_lcd();

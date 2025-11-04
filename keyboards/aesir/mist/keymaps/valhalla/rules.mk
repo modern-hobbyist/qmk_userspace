@@ -10,4 +10,7 @@ SRC += ./fonts/norse20.qff.c
 SRC += ./graphics/hermod-logo.qgf.c
 SRC += ./graphics/left-base-layout.qgf.c
 SRC += ./graphics/left-1-layout.qgf.c
+SRC += ./graphics/mist/layer-1.qgf.c
+SRC += ./graphics/mist/layer-1-full.qgf.c
+SRC += ./graphics/mist/layer-2-full.qgf.c
 TAP_DANCE_ENABLE = yes
