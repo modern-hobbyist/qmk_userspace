@@ -40,6 +40,7 @@ enum userspace_keycodes {
     SCREEN_SHOT_TO_CLIPBOARD,
     SCREEN_SHOT_AREA,
     SCREEN_SHOT_SCREEN,
+    RAYCAST,
 };
 
 enum layer_names {

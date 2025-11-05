@@ -332,6 +332,12 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             } else {
             }
             break;
+        case RAYCAST:
+            if (record->event.pressed) {
+                SEND_STRING(SS_LOPT(SS_TAP(X_SPACE)));
+            } else {
+            }
+            break;
     }
     // other macros
     return true;
