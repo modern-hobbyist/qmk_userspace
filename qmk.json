@@ -3,6 +3,8 @@
     "build_targets": [
         ["aesir/hermod", "valhalla"],
         ["aesir/heimdall", "valhalla"],
-        ["aesir/template", "valhalla"]
+        ["aesir/template", "valhalla"],
+        ["aesir/mist", "valhalla"],
+        ["aesir/mist", "default"]
     ]
 }

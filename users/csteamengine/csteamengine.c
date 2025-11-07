@@ -334,7 +334,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             break;
         case RAYCAST:
             if (record->event.pressed) {
-                SEND_STRING(SS_LOPT(SS_TAP(X_SPACE)));
+                SEND_STRING(SS_LGUI(SS_TAP(X_SPACE)));
             } else {
             }
             break;

@@ -13,4 +13,4 @@ SRC += ./graphics/left-1-layout.qgf.c
 SRC += ./graphics/mist/layer-1.qgf.c
 SRC += ./graphics/mist/layer-1-full.qgf.c
 SRC += ./graphics/mist/layer-2-full.qgf.c
-TAP_DANCE_ENABLE = no
+TAP_DANCE_ENABLE = yes
