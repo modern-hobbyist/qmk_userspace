@@ -8,4 +8,4 @@
 #include <qp.h>
 
 extern const uint32_t gfx_layer_1_full_length;
-extern const uint8_t  gfx_layer_1_full[5978];
+extern const uint8_t  gfx_layer_1_full[5976];

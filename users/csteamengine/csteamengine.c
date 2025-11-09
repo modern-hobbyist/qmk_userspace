@@ -338,6 +338,16 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             } else {
             }
             break;
+        case APP_SWITCHER:
+            if (record->event.pressed) {
+                // Hold Cmd + tap Tab (enters switcher but keeps Cmd held)
+                register_code(KC_LGUI);
+                tap_code(KC_TAB);
+            } else {
+                // Release Cmd when key is released (exits switcher)
+                unregister_code(KC_LGUI);
+            }
+            break;
     }
     // other macros
     return true;
