@@ -1,5 +1,6 @@
 USER_NAME := csteamengine
-VIA_ENABLE = no
+VIA_ENABLE = yes
+WEAR_LEVELING_ENABLE = yes
 OLED_ENABLE = no
 QUANTUM_PAINTER_ENABLE = yes
 QUANTUM_PAINTER_DRIVERS += ili9341_spi
@@ -14,3 +15,4 @@ SRC += ./graphics/mist/layer-1.qgf.c
 SRC += ./graphics/mist/layer-1-full.qgf.c
 SRC += ./graphics/mist/layer-2-full.qgf.c
 TAP_DANCE_ENABLE = yes
+QGF_DECOMPRESSOR_ENABLE = yes
