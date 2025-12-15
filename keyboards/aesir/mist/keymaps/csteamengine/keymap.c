@@ -95,8 +95,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         KC_TAB,   KC_Q,     KC_W,   KC_E,    KC_R,    KC_T,     KC_Y,    KC_U,    KC_I,      KC_O,    KC_P,    KC_LBRC, KC_RBRC,                KC_BSLS,                        KC_NUM,     KC_PSLS, KC_PAST, KC_PMNS,
         KC_CAPS,    KC_A,     KC_S,   KC_D,    KC_F,    KC_G,     KC_H,    KC_J,    KC_K,      KC_L,    KC_SCLN, KC_QUOT,                       KC_ENT,                         KC_P7,      KC_P8,   KC_P9,
             KC_LSFT,        KC_Z,     KC_X,   KC_C,    KC_V,    KC_B,     KC_N,    KC_M,    KC_COMM,   KC_DOT,  KC_SLSH,                        KC_RSFT,                        KC_P4,      KC_P5,   KC_P6,   KC_PPLS,
-        KC_NO,  KC_NO,    MAC_EMOJIS, KC_LOPT,  KC_LGUI,      MO(_FN0),      KC_SPC, KC_RCTL,           KC_UP,                       KC_NO,  KC_RCTL,                        KC_P1,      KC_P2,   KC_P3,
-        TD(TD_TICK_TICK),   TD(TD_OBSIDIAN),      APP_SWITCHER,                             KC_LEFT,    KC_DOWN,    KC_RIGHT,        KC_NO,  TD(TD_REFACTOR),                          KC_P0,               KC_PDOT, KC_PENT
+        KC_NO,  KC_NO,    MAC_EMOJIS, KC_LOPT,  KC_LGUI,      MO(_FN0),      KC_SPC, KC_RCTL,           KC_UP,                       TD(TD_REFACTOR),   KC_NO,                  KC_P1,      KC_P2,   KC_P3,
+        TD(TD_TICK_TICK),   TD(TD_OBSIDIAN),      APP_SWITCHER,                             KC_LEFT,    KC_DOWN,    KC_RIGHT,        KC_HOME,           KC_END,                 KC_P0,               KC_PDOT, KC_PENT
     ),
     [_FN0] = LAYOUT(
         QK_BOOT,     RGB_TOG, RGB_VAD,    RGB_VAI,    RGB_HUI,    RGB_RMOD,        RGB_MOD,   _______,   _______,   _______,   _______,  _______,  _______,  _______,
