@@ -619,13 +619,13 @@ void obsidian_finished(tap_dance_state_t *state, void *user_data) {
     ql_tap_state.state = cur_dance(state);
     switch (ql_tap_state.state) {
         case TD_SINGLE_TAP:
-            SEND_STRING(SS_LGUI(SS_LOPT(SS_LSFT(SS_TAP(X_O)))));
+            SEND_STRING(SS_LGUI(SS_LSFT(SS_LOPT(SS_LCTL(SS_TAP(X_O))))));
             break;
         case TD_SINGLE_HOLD:
             SEND_STRING(SS_LGUI(SS_LSFT(SS_TAP(X_M))));
             break;
         case TD_DOUBLE_TAP:
-            SEND_STRING(SS_LGUI(SS_LSFT(SS_LOPT(SS_LCTL(SS_TAP(X_O))))));
+            SEND_STRING(SS_LGUI(SS_LOPT(SS_LSFT(SS_TAP(X_O)))));
             break;
         default:
             break;
