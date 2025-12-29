@@ -1,0 +1,9 @@
+// #ifndef LCD_ACTIVITY_TIMEOUT
+#undef LCD_ACTIVITY_TIMEOUT
+#define LCD_ACTIVITY_TIMEOUT 5000
+#define QUANTUM_PAINTER_DISPLAY_TIMEOUT LCD_ACTIVITY_TIMEOUT
+// #endif
+
+// Uncomment this if you want to configure a secrets.h file
+#define FEE_PAGE_COUNT 1
+#define QUANTUM_PAINTER_PIXDATA_BUFFER_SIZE 512
