@@ -5,6 +5,8 @@
         ["aesir/heimdall", "valhalla"],
         ["aesir/template", "valhalla"],
         ["aesir/mist", "valhalla"],
-        ["aesir/mist", "default"]
+        ["aesir/mist", "default"],
+        ["aesir/hermod_mk_ii", "valhalla"],
+        ["aesir/hermod_mk_ii", "default"]
     ]
 }

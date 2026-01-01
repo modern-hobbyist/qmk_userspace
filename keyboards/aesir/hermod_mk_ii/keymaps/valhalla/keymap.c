@@ -41,8 +41,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
                 KC_P4,  KC_P5,   KC_P6,     KC_PEQL,          KC_NO,  KC_TAB,     KC_Q,       KC_W,   KC_E,     KC_R,               KC_T,               KC_Y,           KC_U,           KC_I,       KC_O,       KC_P,       KC_LBRC,    KC_RBRC,            KC_P4,    KC_P5,   KC_P6,     KC_PEQL,
                 KC_P1,  KC_P2,   KC_P3,     KC_NO,            KC_NO,  KC_LSFT,    KC_A,       KC_S,   KC_D,     KC_F,               KC_G,               KC_H,           KC_J,           KC_K,       KC_L,       KC_SCLN,    KC_QUOT,    KC_NO,              KC_P1,    KC_P2,   KC_P3,     KC_NO,
                 KC_NO,  KC_P0,   KC_PDOT,   KC_PENT,          KC_NO,  KC_CAPS,    KC_Z,       KC_X,   KC_C,     KC_V,               KC_B,               KC_N,           KC_M,           KC_COMM,    KC_DOT,     KC_SLSH,    KC_MINS,    KC_RSFT,            KC_PENT,  KC_P0,   KC_PDOT,   KC_PENT,
-                                                                                                                KC_LALT,            KC_LCTL,            KC_LALT,        KC_LCTL,                    KC_UP,
-                                                                                                                LT(1, KC_LGUI),     KC_SPACE,           LT(1, KC_LGUI), KC_SPACE,    KC_LEFT,    KC_DOWN,    KC_RIGHT
+                                                                                                                KC_LALT,            KC_LCTL,            KC_LALT,        KC_LCTL,                                    KC_UP,
+                                                                                                    LT(1, KC_LGUI),     KC_SPACE,   KC_NO,              LT(1, KC_LGUI), KC_SPACE,    KC_NO,      KC_LEFT,    KC_DOWN,    KC_RIGHT
             ),
     [1] = LAYOUT(
                 // Left Half Numpad                           Left Half                                                                                 Right Half                                                                                          Right Half Numpad
@@ -51,8 +51,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
                 KC_P4,  KC_P5,   KC_P6,     KC_PEQL,          KC_NO,  G(KC_TAB),  G(KC_Q),    G(KC_W),     G(KC_E),     G(KC_R),    G(KC_T),            KC_Y,       G(KC_U),    G(KC_I),        KC_O,       G(KC_P),    KC_LBRC,    KC_RBRC,                KC_P4,    KC_P5,   KC_P6,     KC_PEQL,
                 KC_P1,  KC_P2,   KC_P3,     KC_NO,            KC_NO,  KC_LSFT,    G(KC_A),    G(KC_S),     KC_D,        KC_F,       KC_G,               KC_H,       KC_J,       KC_K,           G(KC_L),    KC_SCLN,    KC_QUOT,    KC_NO,                  KC_P1,    KC_P2,   KC_P3,     KC_NO,
                 KC_NO,  KC_P0,   KC_PDOT,   KC_PENT,          KC_NO,  KC_CAPS,    G(KC_Z),    G(KC_X),     G(KC_C),     G(KC_V),    G(KC_B),            G(KC_N),    KC_M,       KC_COMM,        KC_DOT,     G(KC_SLSH), KC_MINS,    KC_RSFT,                KC_PENT,  KC_P0,   KC_PDOT,   KC_PENT,
-                                                                                                                        KC_LALT,    KC_LCTL,            KC_MPRV,    KC_MNXT,                    KC_VOLU,
-                                                                                                                        KC_LGUI,    G(KC_SPACE),        KC_LGUI,    KC_MPLY,     LAG(KC_LEFT),   KC_VOLD,    LAG(KC_RIGHT)
+                                                                                                                        KC_LALT,    KC_LCTL,            KC_MPRV,    KC_MNXT,                                KC_VOLU,
+                                                                                                        KC_LGUI,    G(KC_SPACE),    KC_NO,              KC_LGUI,    KC_MPLY, KC_NO,         LAG(KC_LEFT),   KC_VOLD,    LAG(KC_RIGHT)
             ),
 };
 
@@ -100,7 +100,7 @@ const char *current_layer_name(void) {
 void init_lcd(void) {
     qp_init(lcd, QP_ROTATION_0);
 
-    gpio_write_pin_high(LCD_ENABLE_PIN);
+    // gpio_write_pin_high(LCD_ENABLE_PIN);
 
     // Let the LCD get some power...
     wait_ms(200);
@@ -160,7 +160,7 @@ void power_off_lcd(void) {
     qp_power(lcd, false);
 
     // Disable power to display
-    gpio_write_pin_low(LCD_ENABLE_PIN);
+    // gpio_write_pin_low(LCD_ENABLE_PIN);
 }
 
 void render_lcd() {
@@ -243,10 +243,10 @@ void check_lcd_timeout(void) {
 
 void keyboard_pre_init_keymap(void) {
     #ifdef LCD_ACTIVITY_TIMEOUT
-        gpio_set_pin_output(LCD_ENABLE_PIN);
+        // gpio_set_pin_output(LCD_ENABLE_PIN);
 
-        // Turn LCD Off for now
-        gpio_write_pin_low(LCD_ENABLE_PIN);
+        // // Turn LCD Off for now
+        // gpio_write_pin_low(LCD_ENABLE_PIN);
     #endif
 }
 
